@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DateRange } from "react-day-picker";
 import { 
@@ -44,7 +43,6 @@ const Index = () => {
   const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
   const [luggageVolume, setLuggageVolume] = useState<number>(0);
 
-  // Actualizar el estado de tripInfo cuando cambie el dateRange
   useEffect(() => {
     if (dateRange?.from) {
       setTripInfo(prev => ({
@@ -55,7 +53,6 @@ const Index = () => {
     }
   }, [dateRange]);
 
-  // Calcular volumen de equipaje cuando cambia la selección
   useEffect(() => {
     if (tripInfo.luggage) {
       const selectedLuggage = LUGGAGE_TYPES.find(l => l.type === tripInfo.luggage);
@@ -67,7 +64,6 @@ const Index = () => {
     }
   }, [tripInfo.luggage]);
 
-  // Generar pronóstico meteorológico cuando tenemos fechas y destino
   useEffect(() => {
     if (tripInfo.startDate && tripInfo.endDate && tripInfo.destination) {
       const forecasts = generateWeatherForecast(
@@ -102,7 +98,6 @@ const Index = () => {
   };
 
   const handleNextStep = () => {
-    // Validación para pasar al siguiente paso
     if (step === 1) {
       if (!tripInfo.destination || !dateRange?.from || !dateRange?.to || !tripInfo.gender) {
         toast({
@@ -305,7 +300,7 @@ const Index = () => {
               className={`flex flex-1 items-center ${step >= 2 ? 'text-maletapp-blue' : 'text-gray-400'}`}
             >
               <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${step >= 2 ? 'bg-maletapp-blue text-white' : 'bg-gray-200'}`}>
-                <Suitcase size={16} />
+                <BaggageClaim size={16} />
               </div>
               <span className="text-sm hidden md:inline">Equipaje</span>
             </div>

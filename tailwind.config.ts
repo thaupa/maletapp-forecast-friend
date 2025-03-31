@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				maletapp: {
+					blue: '#2C9CDB',
+					lightBlue: '#56CCF2', 
+					orange: '#F2994A',
+					lightGray: '#F6F6F6',
+					darkBlue: '#2F80ED'
 				}
 			},
 			borderRadius: {

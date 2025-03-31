@@ -30,12 +30,26 @@ export interface WeatherForecast {
   conditions: string;
 }
 
+export type ClothingCategory = 
+  | 'underwear' 
+  | 'socks' 
+  | 'top' 
+  | 'bottom' 
+  | 'outerwear' 
+  | 'footwear' 
+  | 'accessory' 
+  | 'swimwear' 
+  | 'sleepwear'
+  | 'beach'
+  | 'toiletry';
+
 export interface ClothingItem {
   name: string;
   forGender: Gender[] | 'all';
   forWeather: 'cold' | 'warm' | 'neutral';
   forActivity: ActivityType[];
   volume: number;
+  category: ClothingCategory;
 }
 
 export interface TripInfo {
@@ -46,4 +60,10 @@ export interface TripInfo {
   luggage: LuggageType | null;
   activities: ActivityType[];
   weatherForecasts: WeatherForecast[];
+}
+
+export interface ClothingRecommendation {
+  item: ClothingItem;
+  recommendedQuantity: number;
+  actualQuantity: number;
 }

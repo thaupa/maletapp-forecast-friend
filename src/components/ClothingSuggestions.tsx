@@ -1,11 +1,13 @@
 
 import React from 'react';
-import { ClothingItem, Gender, ActivityType, WeatherForecast } from '@/types';
+import { ClothingItem, Gender, ActivityType, WeatherForecast, ClothingCategory, ClothingRecommendation } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CLOTHING_ITEMS } from '@/data/mockData';
+import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ClothingSuggestionsProps {
   gender: Gender;
@@ -20,7 +22,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   forecasts, 
   luggageVolume 
 }) => {
-  if (!activities.length || !forecasts.length) {
+  if (!forecasts.length) {
     return null;
   }
 
@@ -29,6 +31,12 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   const isWarm = averageTemp > 22;
   const isCold = averageTemp < 15;
   const weatherType = isWarm ? 'warm' : (isCold ? 'cold' : 'neutral');
+  
+  // Duración del viaje (en días)
+  const duration = forecasts.length;
+  
+  // Si no se seleccionaron actividades, usar todas para recomendaciones básicas
+  const effectiveActivities = activities.length > 0 ? activities : ['beach', 'hiking', 'sports', 'formal'];
 
   // Filtrar ropa adecuada para el género, actividades y clima
   const suitableClothing = CLOTHING_ITEMS.filter(item => {
@@ -37,7 +45,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       (Array.isArray(item.forGender) && item.forGender.includes(gender));
     
     // Verificar si el artículo es adecuado para al menos una de las actividades seleccionadas
-    const isActivitySuitable = item.forActivity.some(activity => activities.includes(activity));
+    const isActivitySuitable = item.forActivity.some(activity => effectiveActivities.includes(activity));
     
     // Verificar si el artículo es adecuado para el clima
     const isWeatherSuitable = item.forWeather === 'neutral' || item.forWeather === weatherType;
@@ -45,62 +53,133 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return isGenderSuitable && isActivitySuitable && isWeatherSuitable;
   });
 
-  // Calcular cuántas unidades de cada artículo se pueden empacar
-  const duration = forecasts.length;
-  
-  // Limitar la cantidad de artículos según el volumen de la maleta
-  let remainingVolume = luggageVolume;
-  const packedItems: { item: ClothingItem; quantity: number }[] = [];
-
-  // Preparamos una lista prioritaria por categorías
-  const essentialItems = suitableClothing.filter(item => 
-    item.name.includes('Ropa interior') || 
-    item.name.includes('Calcetines') || 
-    item.name.includes('Pijama')
-  );
-  
-  const activitySpecificItems = suitableClothing.filter(item => 
-    !essentialItems.includes(item) && 
-    activities.some(activity => item.forActivity.includes(activity) && item.forActivity.length <= 2)
-  );
-  
-  const generalItems = suitableClothing.filter(item => 
-    !essentialItems.includes(item) && 
-    !activitySpecificItems.includes(item)
-  );
-
-  // Primero empacamos los esenciales
-  essentialItems.forEach(item => {
-    let quantity = 0;
-    if (item.name.includes('Ropa interior') || item.name.includes('Calcetines')) {
-      quantity = Math.min(duration, Math.floor(remainingVolume / item.volume));
-    } else {
-      quantity = Math.min(1, Math.floor(remainingVolume / item.volume));
+  // Calcular las cantidades recomendadas según la duración del viaje y tipo de prenda
+  const calculateRecommendedQuantity = (item: ClothingItem): number => {
+    switch (item.category) {
+      case 'underwear':
+        return duration; // Un cambio por día
+      case 'socks':
+        // Menos calcetines si hay actividades de playa
+        return activities.includes('beach') ? Math.ceil(duration * 0.7) : duration;
+      case 'top':
+        // Más camisetas para climas cálidos, menos para fríos
+        return isWarm ? Math.ceil(duration * 0.7) : Math.ceil(duration * 0.5);
+      case 'bottom':
+        // Menos pantalones/faldas que camisetas
+        return Math.ceil(duration / 3) + 1;
+      case 'outerwear':
+        // Menos chaquetas/abrigos
+        return isCold ? 2 : 1;
+      case 'footwear':
+        // 2-3 pares de zapatos según duración
+        return duration > 7 ? 3 : 2;
+      case 'sleepwear':
+        return 1; // Un pijama
+      case 'accessory':
+      case 'swimwear':
+      case 'beach':
+      case 'toiletry':
+        return 1; // Generalmente uno de cada
+      default:
+        return 1;
     }
+  };
+
+  // Algoritmo para empacar respetando el volumen de la maleta
+  const packLuggage = (): ClothingRecommendation[] => {
+    let remainingVolume = luggageVolume;
+    const packingList: ClothingRecommendation[] = [];
     
-    if (quantity > 0) {
-      packedItems.push({ item, quantity });
-      remainingVolume -= item.volume * quantity;
+    // Agrupar items por categoría
+    const categorizedItems = suitableClothing.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    }, {} as Record<ClothingCategory, ClothingItem[]>);
+    
+    // Orden de prioridad para empacar
+    const packingPriority: ClothingCategory[] = [
+      'underwear',
+      'socks',
+      'sleepwear',
+      'top',
+      'bottom', 
+      'footwear',
+      'outerwear',
+      'accessory',
+      'swimwear',
+      'beach',
+      'toiletry'
+    ];
+    
+    // Empacar por prioridad
+    packingPriority.forEach(category => {
+      if (!categorizedItems[category]) return;
+      
+      categorizedItems[category].forEach(item => {
+        const recommendedQty = calculateRecommendedQuantity(item);
+        let actualQty = 0;
+        
+        // Calcular cuántos podemos empacar según el volumen disponible
+        for (let i = 0; i < recommendedQty; i++) {
+          if (remainingVolume >= item.volume) {
+            actualQty++;
+            remainingVolume -= item.volume;
+          } else {
+            break;
+          }
+        }
+        
+        // Agregar a la lista de empaque
+        if (actualQty > 0) {
+          packingList.push({
+            item,
+            recommendedQuantity: recommendedQty,
+            actualQuantity: actualQty
+          });
+        }
+      });
+    });
+    
+    return packingList;
+  };
+  
+  const packingList = packLuggage();
+  
+  // Agrupar por categoría para mostrar
+  const groupedItems = packingList.reduce((acc, item) => {
+    const category = item.item.category;
+    if (!acc[category]) {
+      acc[category] = [];
     }
-  });
-
-  // Luego los específicos para actividades
-  activitySpecificItems.forEach(item => {
-    const quantity = Math.min(1, Math.floor(remainingVolume / item.volume));
-    if (quantity > 0) {
-      packedItems.push({ item, quantity });
-      remainingVolume -= item.volume * quantity;
+    acc[category].push(item);
+    return acc;
+  }, {} as Record<ClothingCategory, ClothingRecommendation[]>);
+  
+  // Calcular espacio usado y disponible
+  const usedVolume = packingList.reduce((sum, item) => 
+    sum + (item.item.volume * item.actualQuantity), 0);
+  const volumePercentage = Math.round((usedVolume / luggageVolume) * 100);
+  
+  // Para obtener etiquetas legibles de categorías
+  const getCategoryLabel = (category: ClothingCategory): string => {
+    switch (category) {
+      case 'underwear': return 'Ropa interior';
+      case 'socks': return 'Calcetines';
+      case 'top': return 'Parte superior';
+      case 'bottom': return 'Parte inferior';
+      case 'outerwear': return 'Abrigo/Chaqueta';
+      case 'footwear': return 'Calzado';
+      case 'accessory': return 'Accesorios';
+      case 'swimwear': return 'Ropa de baño';
+      case 'sleepwear': return 'Ropa de dormir';
+      case 'beach': return 'Playa';
+      case 'toiletry': return 'Aseo';
+      default: return category;
     }
-  });
-
-  // Finalmente los generales
-  generalItems.forEach(item => {
-    const quantity = Math.min(1, Math.floor(remainingVolume / item.volume));
-    if (quantity > 0) {
-      packedItems.push({ item, quantity });
-      remainingVolume -= item.volume * quantity;
-    }
-  });
+  };
 
   return (
     <div className="w-full">
@@ -108,63 +187,68 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       
       <Card className="w-full">
         <CardContent className="p-4">
-          <ScrollArea className="h-[300px] pr-4">
+          <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-4">
-              {activities.map((activity, index) => {
-                const activityName = activity === 'beach' 
-                  ? 'Playa' 
-                  : activity === 'hiking' 
-                    ? 'Senderismo' 
-                    : activity === 'sports' 
-                      ? 'Deportes' 
-                      : 'Eventos Formales';
-                
-                const activityItems = packedItems.filter(
-                  ({ item }) => item.forActivity.includes(activity)
-                );
-                
-                return activityItems.length > 0 ? (
-                  <div key={activity}>
-                    <h4 className="font-medium text-sm text-maletapp-blue mb-2">{activityName}</h4>
-                    <ul className="space-y-2">
-                      {activityItems.map(({ item, quantity }, itemIndex) => (
-                        <li key={`${activity}-${itemIndex}`} className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                          <span>{item.name}</span>
-                          {quantity > 1 && (
-                            <span className="ml-1 text-gray-500">x{quantity}</span>
-                          )}
+              {Object.entries(groupedItems).map(([category, items], index) => (
+                <Collapsible key={category} defaultOpen={true} className="mb-4">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full py-2 px-1 hover:bg-gray-50 rounded">
+                    <h4 className="font-medium text-sm text-maletapp-blue">
+                      {getCategoryLabel(category as ClothingCategory)}
+                    </h4>
+                    <Badge variant="outline">{items.length}</Badge>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent>
+                    <ul className="space-y-2 mt-2">
+                      {items.map((recommendation, itemIndex) => (
+                        <li key={`${category}-${itemIndex}`} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center">
+                            {recommendation.actualQuantity >= recommendation.recommendedQuantity ? (
+                              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                            ) : (
+                              <AlertCircle className="h-4 w-4 text-amber-500 mr-2 flex-shrink-0" />
+                            )}
+                            <span>{recommendation.item.name}</span>
+                          </div>
+                          <div className="flex items-center space-x-1 text-sm">
+                            <span className={`font-medium ${recommendation.actualQuantity < recommendation.recommendedQuantity ? 'text-amber-500' : 'text-green-600'}`}>
+                              {recommendation.actualQuantity}
+                            </span>
+                            <span className="text-gray-400">/</span>
+                            <span className="text-gray-500">
+                              {recommendation.recommendedQuantity}
+                            </span>
+                          </div>
                         </li>
                       ))}
                     </ul>
-                    {index < activities.length - 1 && (
+                    
+                    {index < Object.keys(groupedItems).length - 1 && (
                       <Separator className="my-3" />
                     )}
-                  </div>
-                ) : null;
-              })}
-              
-              <div>
-                <h4 className="font-medium text-sm text-maletapp-blue mb-2">Elementos generales</h4>
-                <ul className="space-y-2">
-                  {packedItems
-                    .filter(({ item }) => item.forActivity.length > 2)
-                    .map(({ item, quantity }, index) => (
-                      <li key={`general-${index}`} className="flex items-center text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                        <span>{item.name}</span>
-                        {quantity > 1 && (
-                          <span className="ml-1 text-gray-500">x{quantity}</span>
-                        )}
-                      </li>
-                    ))}
-                </ul>
-              </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              ))}
             </div>
           </ScrollArea>
           
-          <div className="mt-4 pt-3 border-t text-xs text-gray-500">
-            Espacio disponible: {Math.round(remainingVolume / 1000)} de {Math.round(luggageVolume / 1000)} litros
+          <div className="mt-6 pt-3 border-t">
+            <div className="text-sm mb-2">
+              <span className="font-medium">Espacio utilizado:</span> {Math.round(usedVolume / 1000)} de {Math.round(luggageVolume / 1000)} litros ({volumePercentage}%)
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div 
+                className={`h-2.5 rounded-full ${volumePercentage > 85 ? 'bg-red-500' : volumePercentage > 70 ? 'bg-amber-500' : 'bg-green-500'}`} 
+                style={{ width: `${Math.min(volumePercentage, 100)}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              {volumePercentage > 85 
+                ? 'Tu maleta está muy llena, considera quitar algunos artículos.' 
+                : volumePercentage > 70 
+                  ? 'Tu maleta está bastante llena, pero aún tienes espacio.' 
+                  : 'Tienes suficiente espacio en tu maleta.'}
+            </p>
           </div>
         </CardContent>
       </Card>

@@ -116,15 +116,6 @@ const Index = () => {
         });
         return;
       }
-    } else if (step === 3) {
-      if (tripInfo.activities.length === 0) {
-        toast({
-          title: "Selecciona actividades",
-          description: "Por favor, selecciona al menos una actividad para tu viaje.",
-          variant: "destructive"
-        });
-        return;
-      }
     }
 
     if (step < 4) {

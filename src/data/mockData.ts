@@ -1,4 +1,3 @@
-
 import { LuggageInfo, Activity, ClothingItem } from '../types';
 
 export const LUGGAGE_TYPES: LuggageInfo[] = [
@@ -72,179 +71,238 @@ export const ACTIVITIES: Activity[] = [
 ];
 
 export const CLOTHING_ITEMS: ClothingItem[] = [
-  // Ropa para playa
   {
-    name: 'Bañador/Bikini',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach'],
-    volume: 300
-  },
-  {
-    name: 'Toalla de playa',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach'],
-    volume: 1000
-  },
-  {
-    name: 'Gafas de sol',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach', 'hiking', 'sports'],
-    volume: 200
-  },
-  {
-    name: 'Chanclas',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach'],
-    volume: 600
-  },
-  {
-    name: 'Crema solar',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach', 'hiking', 'sports'],
-    volume: 200
-  },
-  
-  // Ropa para senderismo
-  {
-    name: 'Botas de montaña',
-    forGender: 'all',
-    forWeather: 'neutral',
-    forActivity: ['hiking'],
-    volume: 2000
-  },
-  {
-    name: 'Chaqueta impermeable',
-    forGender: 'all',
-    forWeather: 'cold',
-    forActivity: ['hiking'],
-    volume: 1000
-  },
-  {
-    name: 'Pantalones de senderismo',
-    forGender: 'all',
-    forWeather: 'neutral',
-    forActivity: ['hiking'],
-    volume: 800
-  },
-  {
-    name: 'Mochila pequeña',
-    forGender: 'all',
-    forWeather: 'neutral',
-    forActivity: ['hiking', 'sports'],
-    volume: 500
-  },
-  
-  // Ropa para deportes
-  {
-    name: 'Zapatillas deportivas',
-    forGender: 'all',
-    forWeather: 'neutral',
-    forActivity: ['sports', 'hiking'],
-    volume: 1500
-  },
-  {
-    name: 'Camisetas deportivas',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['sports', 'hiking'],
-    volume: 300
-  },
-  {
-    name: 'Pantalones cortos',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['sports', 'beach'],
-    volume: 300
-  },
-  
-  // Ropa para eventos formales
-  {
-    name: 'Traje',
+    name: 'Boxers',
     forGender: ['male'],
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 2500
-  },
-  {
-    name: 'Vestido',
-    forGender: ['female'],
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 1500
-  },
-  {
-    name: 'Camisa formal',
-    forGender: ['male'],
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 500
-  },
-  {
-    name: 'Blusa',
-    forGender: ['female'],
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 400
-  },
-  {
-    name: 'Zapatos formales',
-    forGender: 'all',
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 1200
-  },
-  {
-    name: 'Corbata',
-    forGender: ['male'],
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 100
-  },
-  
-  // Ropa general
-  {
-    name: 'Ropa interior (por día)',
-    forGender: 'all',
     forWeather: 'neutral',
     forActivity: ['beach', 'hiking', 'sports', 'formal'],
-    volume: 100
+    volume: 100,
+    category: 'underwear'
   },
   {
-    name: 'Calcetines (por día)',
+    name: 'Bragas/Tangas',
+    forGender: ['female'],
+    forWeather: 'neutral',
+    forActivity: ['beach', 'hiking', 'sports', 'formal'],
+    volume: 80,
+    category: 'underwear'
+  },
+  {
+    name: 'Sujetador',
+    forGender: ['female'],
+    forWeather: 'neutral',
+    forActivity: ['beach', 'hiking', 'sports', 'formal'],
+    volume: 150,
+    category: 'underwear'
+  },
+  {
+    name: 'Calcetines',
     forGender: 'all',
     forWeather: 'neutral',
     forActivity: ['hiking', 'sports', 'formal'],
-    volume: 100
+    volume: 100,
+    category: 'socks'
   },
   {
     name: 'Pijama',
     forGender: 'all',
     forWeather: 'neutral',
     forActivity: ['beach', 'hiking', 'sports', 'formal'],
-    volume: 500
+    volume: 500,
+    category: 'sleepwear'
+  },
+  
+  {
+    name: 'Camiseta',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach', 'hiking', 'sports'],
+    volume: 250,
+    category: 'top'
+  },
+  {
+    name: 'Camisa manga larga',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['hiking', 'formal'],
+    volume: 350,
+    category: 'top'
   },
   {
     name: 'Jersey/Sudadera',
     forGender: 'all',
     forWeather: 'cold',
     forActivity: ['beach', 'hiking', 'sports'],
-    volume: 1000
+    volume: 800,
+    category: 'top'
   },
+  
   {
-    name: 'Chaqueta abrigada',
+    name: 'Chaqueta',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['beach', 'hiking', 'sports', 'formal'],
-    volume: 2000
-  }
+    forActivity: ['hiking', 'sports', 'formal'],
+    volume: 1200,
+    category: 'outerwear'
+  },
+  {
+    name: 'Abrigo',
+    forGender: 'all',
+    forWeather: 'cold',
+    forActivity: ['formal', 'hiking'],
+    volume: 2000,
+    category: 'outerwear'
+  },
+  {
+    name: 'Impermeable',
+    forGender: 'all',
+    forWeather: 'cold',
+    forActivity: ['hiking'],
+    volume: 1000,
+    category: 'outerwear'
+  },
+  
+  {
+    name: 'Pantalones',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['hiking', 'formal'],
+    volume: 600,
+    category: 'bottom'
+  },
+  {
+    name: 'Vaqueros',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['beach', 'hiking', 'sports'],
+    volume: 800,
+    category: 'bottom'
+  },
+  {
+    name: 'Falda',
+    forGender: ['female'],
+    forWeather: 'warm',
+    forActivity: ['beach', 'formal'],
+    volume: 500,
+    category: 'bottom'
+  },
+  {
+    name: 'Pantalones cortos',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['sports', 'beach', 'hiking'],
+    volume: 300,
+    category: 'bottom'
+  },
+  
+  {
+    name: 'Zapatos formales',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['formal'],
+    volume: 1200,
+    category: 'footwear'
+  },
+  {
+    name: 'Zapatillas deportivas',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['sports', 'hiking'],
+    volume: 1500,
+    category: 'footwear'
+  },
+  {
+    name: 'Chanclas',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 600,
+    category: 'footwear'
+  },
+  {
+    name: 'Botas de montaña',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['hiking'],
+    volume: 2000,
+    category: 'footwear'
+  },
+  
+  {
+    name: 'Sombrero/Gorra',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach', 'hiking', 'sports'],
+    volume: 300,
+    category: 'accessory'
+  },
+  {
+    name: 'Cinturón',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['formal'],
+    volume: 200,
+    category: 'accessory'
+  },
+  {
+    name: 'Guantes',
+    forGender: 'all',
+    forWeather: 'cold',
+    forActivity: ['hiking'],
+    volume: 200,
+    category: 'accessory'
+  },
+  {
+    name: 'Bufanda',
+    forGender: 'all',
+    forWeather: 'cold',
+    forActivity: ['hiking', 'formal'],
+    volume: 300,
+    category: 'accessory'
+  },
+  {
+    name: 'Corbata',
+    forGender: ['male'],
+    forWeather: 'neutral',
+    forActivity: ['formal'],
+    volume: 100,
+    category: 'accessory'
+  },
+  
+  {
+    name: 'Bañador/Bikini',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 300,
+    category: 'swimwear'
+  },
+  {
+    name: 'Toalla de playa',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 1000,
+    category: 'beach'
+  },
+  {
+    name: 'Gafas de sol',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach', 'hiking', 'sports'],
+    volume: 200,
+    category: 'accessory'
+  },
+  {
+    name: 'Crema solar',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach', 'hiking', 'sports'],
+    volume: 200,
+    category: 'toiletry'
+  },
 ];
 
-// Ciudades populares para autocompletado
 export const POPULAR_CITIES = [
   "Madrid, España",
   "Barcelona, España",
@@ -278,64 +336,54 @@ export const POPULAR_CITIES = [
   "Toronto, Canadá"
 ];
 
-// Función para generar datos meteorológicos simulados
 export const generateWeatherForecast = (startDate: Date, endDate: Date, destination: string) => {
   const forecasts = [];
   const currentDate = new Date(startDate);
   const lastDay = new Date(endDate);
   
-  // Ensure we include the end date in our forecast
+  currentDate.setHours(0, 0, 0, 0);
+  lastDay.setHours(0, 0, 0, 0);
+  
   while (currentDate <= lastDay) {
-    // Simplemente elegimos temperaturas aleatorias basadas en el destino y las fechas
     const getRandomTemp = (city: string, date: Date) => {
-      // Temperaturas base por temporada para simplificar
-      const month = date.getMonth(); // 0-11
+      const month = date.getMonth();
       
-      // Simulamos diferentes zonas climáticas
       if (city.includes("Málaga") || city.includes("Sevilla") || city.includes("Valencia")) {
-        // Clima cálido del sur de España
         return {
           min: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 4) : 18 + Math.floor(Math.random() * 6),
           max: month < 3 || month > 10 ? 16 + Math.floor(Math.random() * 4) : 28 + Math.floor(Math.random() * 6)
         };
       } else if (city.includes("Madrid") || city.includes("Barcelona")) {
-        // Clima continental/mediterráneo
         return {
           min: month < 3 || month > 10 ? 3 + Math.floor(Math.random() * 5) : 14 + Math.floor(Math.random() * 6),
           max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 5) : 25 + Math.floor(Math.random() * 6)
         };
       } else if (city.includes("Bilbao")) {
-        // Clima del norte de España
         return {
           min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 3) : 12 + Math.floor(Math.random() * 4),
           max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 4) : 22 + Math.floor(Math.random() * 4)
         };
       } else if (city.includes("Londres") || city.includes("Dublín")) {
-        // Clima del norte de Europa
         return {
           min: month < 3 || month > 10 ? 2 + Math.floor(Math.random() * 3) : 10 + Math.floor(Math.random() * 4),
           max: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 4) : 18 + Math.floor(Math.random() * 5)
         };
       } else if (city.includes("París") || city.includes("Berlín")) {
-        // Clima de Europa central
         return {
           min: month < 3 || month > 10 ? 0 + Math.floor(Math.random() * 5) : 12 + Math.floor(Math.random() * 5),
           max: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 6) : 22 + Math.floor(Math.random() * 6)
         };
       } else if (city.includes("Roma") || city.includes("Atenas")) {
-        // Clima mediterráneo
         return {
           min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 5) : 15 + Math.floor(Math.random() * 5),
           max: month < 3 || month > 10 ? 15 + Math.floor(Math.random() * 5) : 28 + Math.floor(Math.random() * 6)
         };
       } else if (city.includes("Cancún") || city.includes("Bangkok")) {
-        // Clima tropical
         return {
           min: 20 + Math.floor(Math.random() * 5),
           max: 28 + Math.floor(Math.random() * 6)
         };
       } else {
-        // Clima genérico
         return {
           min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 5) : 12 + Math.floor(Math.random() * 8),
           max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 8) : 22 + Math.floor(Math.random() * 10)
@@ -362,7 +410,6 @@ export const generateWeatherForecast = (startDate: Date, endDate: Date, destinat
       conditions: condition
     });
     
-    // Increment the date by one day
     currentDate.setDate(currentDate.getDate() + 1);
   }
   

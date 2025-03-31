@@ -282,75 +282,77 @@ export const POPULAR_CITIES = [
 export const generateWeatherForecast = (startDate: Date, endDate: Date, destination: string) => {
   const forecasts = [];
   const currentDate = new Date(startDate);
+  const lastDay = new Date(endDate);
   
-  // Simplemente elegimos temperaturas aleatorias basadas en el destino y las fechas
-  const getRandomTemp = (city: string, date: Date) => {
-    // Temperaturas base por temporada para simplificar
-    const month = date.getMonth(); // 0-11
+  // Ensure we include the end date in our forecast
+  while (currentDate <= lastDay) {
+    // Simplemente elegimos temperaturas aleatorias basadas en el destino y las fechas
+    const getRandomTemp = (city: string, date: Date) => {
+      // Temperaturas base por temporada para simplificar
+      const month = date.getMonth(); // 0-11
+      
+      // Simulamos diferentes zonas climáticas
+      if (city.includes("Málaga") || city.includes("Sevilla") || city.includes("Valencia")) {
+        // Clima cálido del sur de España
+        return {
+          min: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 4) : 18 + Math.floor(Math.random() * 6),
+          max: month < 3 || month > 10 ? 16 + Math.floor(Math.random() * 4) : 28 + Math.floor(Math.random() * 6)
+        };
+      } else if (city.includes("Madrid") || city.includes("Barcelona")) {
+        // Clima continental/mediterráneo
+        return {
+          min: month < 3 || month > 10 ? 3 + Math.floor(Math.random() * 5) : 14 + Math.floor(Math.random() * 6),
+          max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 5) : 25 + Math.floor(Math.random() * 6)
+        };
+      } else if (city.includes("Bilbao")) {
+        // Clima del norte de España
+        return {
+          min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 3) : 12 + Math.floor(Math.random() * 4),
+          max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 4) : 22 + Math.floor(Math.random() * 4)
+        };
+      } else if (city.includes("Londres") || city.includes("Dublín")) {
+        // Clima del norte de Europa
+        return {
+          min: month < 3 || month > 10 ? 2 + Math.floor(Math.random() * 3) : 10 + Math.floor(Math.random() * 4),
+          max: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 4) : 18 + Math.floor(Math.random() * 5)
+        };
+      } else if (city.includes("París") || city.includes("Berlín")) {
+        // Clima de Europa central
+        return {
+          min: month < 3 || month > 10 ? 0 + Math.floor(Math.random() * 5) : 12 + Math.floor(Math.random() * 5),
+          max: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 6) : 22 + Math.floor(Math.random() * 6)
+        };
+      } else if (city.includes("Roma") || city.includes("Atenas")) {
+        // Clima mediterráneo
+        return {
+          min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 5) : 15 + Math.floor(Math.random() * 5),
+          max: month < 3 || month > 10 ? 15 + Math.floor(Math.random() * 5) : 28 + Math.floor(Math.random() * 6)
+        };
+      } else if (city.includes("Cancún") || city.includes("Bangkok")) {
+        // Clima tropical
+        return {
+          min: 20 + Math.floor(Math.random() * 5),
+          max: 28 + Math.floor(Math.random() * 6)
+        };
+      } else {
+        // Clima genérico
+        return {
+          min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 5) : 12 + Math.floor(Math.random() * 8),
+          max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 8) : 22 + Math.floor(Math.random() * 10)
+        };
+      }
+    };
     
-    // Simulamos diferentes zonas climáticas
-    if (city.includes("Málaga") || city.includes("Sevilla") || city.includes("Valencia")) {
-      // Clima cálido del sur de España
-      return {
-        min: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 4) : 18 + Math.floor(Math.random() * 6),
-        max: month < 3 || month > 10 ? 16 + Math.floor(Math.random() * 4) : 28 + Math.floor(Math.random() * 6)
-      };
-    } else if (city.includes("Madrid") || city.includes("Barcelona")) {
-      // Clima continental/mediterráneo
-      return {
-        min: month < 3 || month > 10 ? 3 + Math.floor(Math.random() * 5) : 14 + Math.floor(Math.random() * 6),
-        max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 5) : 25 + Math.floor(Math.random() * 6)
-      };
-    } else if (city.includes("Bilbao")) {
-      // Clima del norte de España
-      return {
-        min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 3) : 12 + Math.floor(Math.random() * 4),
-        max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 4) : 22 + Math.floor(Math.random() * 4)
-      };
-    } else if (city.includes("Londres") || city.includes("Dublín")) {
-      // Clima del norte de Europa
-      return {
-        min: month < 3 || month > 10 ? 2 + Math.floor(Math.random() * 3) : 10 + Math.floor(Math.random() * 4),
-        max: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 4) : 18 + Math.floor(Math.random() * 5)
-      };
-    } else if (city.includes("París") || city.includes("Berlín")) {
-      // Clima de Europa central
-      return {
-        min: month < 3 || month > 10 ? 0 + Math.floor(Math.random() * 5) : 12 + Math.floor(Math.random() * 5),
-        max: month < 3 || month > 10 ? 8 + Math.floor(Math.random() * 6) : 22 + Math.floor(Math.random() * 6)
-      };
-    } else if (city.includes("Roma") || city.includes("Atenas")) {
-      // Clima mediterráneo
-      return {
-        min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 5) : 15 + Math.floor(Math.random() * 5),
-        max: month < 3 || month > 10 ? 15 + Math.floor(Math.random() * 5) : 28 + Math.floor(Math.random() * 6)
-      };
-    } else if (city.includes("Cancún") || city.includes("Bangkok")) {
-      // Clima tropical
-      return {
-        min: 20 + Math.floor(Math.random() * 5),
-        max: 28 + Math.floor(Math.random() * 6)
-      };
-    } else {
-      // Clima genérico
-      return {
-        min: month < 3 || month > 10 ? 5 + Math.floor(Math.random() * 5) : 12 + Math.floor(Math.random() * 8),
-        max: month < 3 || month > 10 ? 12 + Math.floor(Math.random() * 8) : 22 + Math.floor(Math.random() * 10)
-      };
-    }
-  };
-  
-  const getWeatherCondition = (min: number, max: number) => {
-    const avg = (min + max) / 2;
-    if (avg > 25) return "Soleado";
-    if (avg > 18) return "Despejado";
-    if (avg > 12) return "Parcialmente nublado";
-    if (avg > 5) return "Nublado";
-    return "Frío";
-  };
-  
-  while (currentDate <= endDate) {
-    const temps = getRandomTemp(destination, currentDate);
+    const getWeatherCondition = (min: number, max: number) => {
+      const avg = (min + max) / 2;
+      if (avg > 25) return "Soleado";
+      if (avg > 18) return "Despejado";
+      if (avg > 12) return "Parcialmente nublado";
+      if (avg > 5) return "Nublado";
+      return "Frío";
+    };
+    
+    const temps = getRandomTemp(destination, new Date(currentDate));
     const condition = getWeatherCondition(temps.min, temps.max);
     
     forecasts.push({
@@ -360,6 +362,7 @@ export const generateWeatherForecast = (startDate: Date, endDate: Date, destinat
       conditions: condition
     });
     
+    // Increment the date by one day
     currentDate.setDate(currentDate.getDate() + 1);
   }
   

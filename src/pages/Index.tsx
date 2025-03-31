@@ -25,7 +25,7 @@ import ActivitiesSelector from '@/components/ActivitiesSelector';
 import WeatherForecastComponent from '@/components/WeatherForecast';
 import ClothingSuggestions from '@/components/ClothingSuggestions';
 import { LUGGAGE_TYPES, generateWeatherForecast } from '@/data/mockData';
-import { Suitcase, Calendar, CloudSun, User } from 'lucide-react';
+import { BaggageClaim, Calendar, CloudSun, User } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {

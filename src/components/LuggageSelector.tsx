@@ -5,7 +5,7 @@ import { LUGGAGE_TYPES } from '@/data/mockData';
 import { LuggageType } from '@/types';
 import { 
   Backpack, 
-  Suitcase 
+  BaggageClaim
 } from 'lucide-react';
 
 interface LuggageSelectorProps {
@@ -19,13 +19,13 @@ const LuggageSelector: React.FC<LuggageSelectorProps> = ({ selected, onSelect })
       case 'backpack':
         return <Backpack size={48} className="text-maletapp-blue" />;
       case 'small':
-        return <Suitcase size={40} className="text-maletapp-blue" />;
+        return <BaggageClaim size={40} className="text-maletapp-blue" />;
       case 'medium':
-        return <Suitcase size={48} className="text-maletapp-blue" />;
+        return <BaggageClaim size={48} className="text-maletapp-blue" />;
       case 'large':
-        return <Suitcase size={56} className="text-maletapp-blue" />;
+        return <BaggageClaim size={56} className="text-maletapp-blue" />;
       default:
-        return <Suitcase size={48} className="text-maletapp-blue" />;
+        return <BaggageClaim size={48} className="text-maletapp-blue" />;
     }
   };
 
@@ -35,17 +35,19 @@ const LuggageSelector: React.FC<LuggageSelectorProps> = ({ selected, onSelect })
         <div
           key={luggage.type}
           className={cn(
-            "luggage-card border rounded-lg",
-            selected === luggage.type ? "selected" : ""
+            "luggage-card border rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition-colors",
+            selected === luggage.type 
+              ? "border-maletapp-blue bg-blue-50" 
+              : "border-gray-200 hover:border-maletapp-blue hover:bg-blue-50/50"
           )}
           onClick={() => onSelect(luggage.type)}
         >
           {getIcon(luggage.type)}
-          <span className="text-sm font-medium">{luggage.name}</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-sm font-medium mt-2">{luggage.name}</span>
+          <span className="text-xs text-gray-500 text-center mt-1">
             {luggage.dimensions.width} x {luggage.dimensions.height} x {luggage.dimensions.depth} cm
           </span>
-          <span className="text-xs text-gray-600 font-semibold">
+          <span className="text-xs text-gray-600 font-semibold mt-1">
             {(luggage.volume / 1000).toFixed(1)} litros
           </span>
         </div>

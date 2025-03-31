@@ -439,9 +439,11 @@ export const generateWeatherForecast = (startDate: Date, endDate: Date, destinat
   const currentDate = new Date(startDate);
   const lastDay = new Date(endDate);
   
+  // Ensure we're working with date-only comparison (no time)
   currentDate.setHours(0, 0, 0, 0);
   lastDay.setHours(0, 0, 0, 0);
   
+  // We use <= to ensure we include the end date in our forecast
   while (currentDate <= lastDay) {
     const getRandomTemp = (city: string, date: Date) => {
       const month = date.getMonth();
@@ -501,6 +503,7 @@ export const generateWeatherForecast = (startDate: Date, endDate: Date, destinat
     const temps = getRandomTemp(destination, new Date(currentDate));
     const condition = getWeatherCondition(temps.min, temps.max);
     
+    // Store the date in ISO format YYYY-MM-DD
     forecasts.push({
       date: currentDate.toISOString().split('T')[0],
       min: temps.min,
@@ -508,6 +511,7 @@ export const generateWeatherForecast = (startDate: Date, endDate: Date, destinat
       conditions: condition
     });
     
+    // Increment date by one day
     currentDate.setDate(currentDate.getDate() + 1);
   }
   

@@ -85,6 +85,36 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     }
   };
 
+  // Factor de optimización de espacio para ropa doblada (en %)
+  const getFoldedVolumeFactor = (category: ClothingCategory): number => {
+    switch (category) {
+      case 'underwear':
+        return 0.6; // La ropa interior ocupa un 60% doblada
+      case 'socks':
+        return 0.5; // Los calcetines ocupan un 50% cuando se doblan
+      case 'top':
+        return 0.7; // Las prendas superiores ocupan un 70% dobladas
+      case 'bottom':
+        return 0.7; // Las prendas inferiores ocupan un 70% dobladas
+      case 'outerwear':
+        return 0.85; // Las prendas de abrigo son más difíciles de comprimir
+      case 'footwear':
+        return 1.0; // El calzado no se puede comprimir
+      case 'sleepwear':
+        return 0.7;
+      case 'accessory':
+        return 0.8;
+      case 'swimwear':
+        return 0.6;
+      case 'beach':
+        return 0.8;
+      case 'toiletry':
+        return 0.9;
+      default:
+        return 0.8;
+    }
+  };
+
   // Algoritmo para empacar respetando el volumen de la maleta
   const packLuggage = (): ClothingRecommendation[] => {
     let remainingVolume = luggageVolume;
@@ -122,18 +152,21 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
         const recommendedQty = calculateRecommendedQuantity(item);
         let actualQty = 0;
         
+        // Calculamos el volumen real de cada prenda doblada
+        const foldedItemVolume = item.volume * getFoldedVolumeFactor(item.category);
+        
         // Calcular cuántos podemos empacar según el volumen disponible
         for (let i = 0; i < recommendedQty; i++) {
-          if (remainingVolume >= item.volume) {
+          if (remainingVolume >= foldedItemVolume) {
             actualQty++;
-            remainingVolume -= item.volume;
+            remainingVolume -= foldedItemVolume;
           } else {
             break;
           }
         }
         
         // Agregar a la lista de empaque
-        if (actualQty > 0) {
+        if (actualQty > 0 || recommendedQty > 0) {
           packingList.push({
             item,
             recommendedQuantity: recommendedQty,
@@ -158,9 +191,9 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return acc;
   }, {} as Record<ClothingCategory, ClothingRecommendation[]>);
   
-  // Calcular espacio usado y disponible
+  // Calcular espacio usado y disponible (usando volumen de ropa doblada)
   const usedVolume = packingList.reduce((sum, item) => 
-    sum + (item.item.volume * item.actualQuantity), 0);
+    sum + (item.item.volume * getFoldedVolumeFactor(item.item.category) * item.actualQuantity), 0);
   const volumePercentage = Math.round((usedVolume / luggageVolume) * 100);
   
   // Para obtener etiquetas legibles de categorías
@@ -179,6 +212,11 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       case 'toiletry': return 'Aseo';
       default: return category;
     }
+  };
+
+  // Traducción detallada de cada prenda
+  const getDetailedItemName = (item: ClothingItem): string => {
+    return item.name;
   };
 
   return (
@@ -208,7 +246,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
                             ) : (
                               <AlertCircle className="h-4 w-4 text-amber-500 mr-2 flex-shrink-0" />
                             )}
-                            <span>{recommendation.item.name}</span>
+                            <span>{getDetailedItemName(recommendation.item)}</span>
                           </div>
                           <div className="flex items-center space-x-1 text-sm">
                             <span className={`font-medium ${recommendation.actualQuantity < recommendation.recommendedQuantity ? 'text-amber-500' : 'text-green-600'}`}>
@@ -234,7 +272,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
           
           <div className="mt-6 pt-3 border-t">
             <div className="text-sm mb-2">
-              <span className="font-medium">Espacio utilizado:</span> {Math.round(usedVolume / 1000)} de {Math.round(luggageVolume / 1000)} litros ({volumePercentage}%)
+              <span className="font-medium">Espacio utilizado (ropa doblada):</span> {Math.round(usedVolume / 1000)} de {Math.round(luggageVolume / 1000)} litros ({volumePercentage}%)
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div 

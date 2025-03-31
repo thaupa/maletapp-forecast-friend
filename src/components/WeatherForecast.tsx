@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { WeatherForecast } from '@/types';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { 
   Cloud, 
@@ -48,7 +48,8 @@ const WeatherForecastComponent: React.FC<WeatherForecastProps> = ({ forecasts })
       <ScrollArea className="w-full rounded-md">
         <div className="flex space-x-4 pb-4 px-1">
           {forecasts.map((forecast, index) => {
-            const date = new Date(forecast.date);
+            // Use parseISO to correctly parse the ISO date string
+            const date = parseISO(forecast.date);
             return (
               <Card key={index} className="min-w-[140px] shadow-sm flex-shrink-0">
                 <CardContent className="p-3">

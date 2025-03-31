@@ -19,9 +19,11 @@ const DestinationAutocomplete: React.FC<DestinationAutocompleteProps> = ({ value
       return;
     }
 
+    const lowercaseQuery = value.toLowerCase();
+    // Increase the number of suggestions to show and improve the filtering method
     const filteredSuggestions = POPULAR_CITIES.filter(city => 
-      city.toLowerCase().includes(value.toLowerCase())
-    ).slice(0, 5);
+      city.toLowerCase().includes(lowercaseQuery)
+    ).slice(0, 10); // Show more suggestions (10 instead of 5)
     
     setSuggestions(filteredSuggestions);
   }, [value]);

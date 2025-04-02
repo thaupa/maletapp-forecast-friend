@@ -85,33 +85,33 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     }
   };
 
-  // Factor de optimización de espacio para ropa doblada (en %)
+  // Factor de compresión mejorado para ropa doblada (volumen real ocupado)
   const getFoldedVolumeFactor = (category: ClothingCategory): number => {
     switch (category) {
       case 'underwear':
-        return 0.6; // La ropa interior ocupa un 60% doblada
+        return 0.4; // La ropa interior ocupa un 40% doblada (más comprimible)
       case 'socks':
-        return 0.5; // Los calcetines ocupan un 50% cuando se doblan
+        return 0.35; // Los calcetines ocupan un 35% cuando se doblan (muy comprimibles)
       case 'top':
-        return 0.7; // Las prendas superiores ocupan un 70% dobladas
+        return 0.55; // Las prendas superiores ocupan un 55% dobladas
       case 'bottom':
-        return 0.7; // Las prendas inferiores ocupan un 70% dobladas
+        return 0.6; // Las prendas inferiores ocupan un 60% dobladas
       case 'outerwear':
-        return 0.85; // Las prendas de abrigo son más difíciles de comprimir
+        return 0.75; // Las prendas de abrigo son más difíciles de comprimir
       case 'footwear':
-        return 1.0; // El calzado no se puede comprimir
+        return 0.9; // El calzado apenas se puede comprimir
       case 'sleepwear':
-        return 0.7;
-      case 'accessory':
-        return 0.8;
-      case 'swimwear':
         return 0.6;
+      case 'accessory':
+        return 0.7;
+      case 'swimwear':
+        return 0.5;
       case 'beach':
-        return 0.8;
+        return 0.7;
       case 'toiletry':
-        return 0.9;
-      default:
         return 0.8;
+      default:
+        return 0.7;
     }
   };
 

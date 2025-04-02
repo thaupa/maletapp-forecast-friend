@@ -15,7 +15,7 @@ export interface LuggageInfo {
   image: string;
 }
 
-export type ActivityType = 'beach' | 'hiking' | 'sports' | 'formal';
+export type ActivityType = 'beach' | 'city' | 'sports' | 'formal';
 
 export interface Activity {
   type: ActivityType;

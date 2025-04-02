@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { ACTIVITIES } from '@/data/mockData';
 import { ActivityType } from '@/types';
 import { 
-  User, 
+  MapPin, 
   Users, 
   Calendar, 
   CloudSun 
@@ -20,14 +20,14 @@ const ActivitiesSelector: React.FC<ActivitiesSelectorProps> = ({ selected, onSel
     switch(type) {
       case 'beach':
         return <CloudSun size={36} className="text-maletapp-orange" />;
-      case 'hiking':
-        return <Users size={36} className="text-maletapp-blue" />;
+      case 'city':
+        return <MapPin size={36} className="text-maletapp-blue" />;
       case 'sports':
-        return <User size={36} className="text-maletapp-blue" />;
+        return <Users size={36} className="text-maletapp-blue" />;
       case 'formal':
         return <Calendar size={36} className="text-maletapp-blue" />;
       default:
-        return <User size={36} className="text-maletapp-blue" />;
+        return <MapPin size={36} className="text-maletapp-blue" />;
     }
   };
 

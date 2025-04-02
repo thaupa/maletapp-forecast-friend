@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DateRange } from "react-day-picker";
 import { 
@@ -7,16 +8,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue 
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Gender, ActivityType, LuggageType, WeatherForecast, TripInfo } from '@/types';
+import { ActivityType, LuggageType, WeatherForecast, TripInfo } from '@/types';
 import DateRangePicker from '@/components/DateRangePicker';
 import DestinationAutocomplete from '@/components/DestinationAutocomplete';
 import LuggageSelector from '@/components/LuggageSelector';
@@ -24,7 +18,7 @@ import ActivitiesSelector from '@/components/ActivitiesSelector';
 import WeatherForecastComponent from '@/components/WeatherForecast';
 import ClothingSuggestions from '@/components/ClothingSuggestions';
 import { LUGGAGE_TYPES, generateWeatherForecast } from '@/data/mockData';
-import { BaggageClaim, Calendar, CloudSun, User } from 'lucide-react';
+import { BaggageClaim, Calendar, CloudSun, MapPin } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
@@ -35,7 +29,7 @@ const Index = () => {
     destination: '',
     startDate: null,
     endDate: null,
-    gender: 'other',
+    gender: 'other', // We'll keep this in the state but not show it in the UI
     luggage: null,
     activities: [],
     weatherForecasts: []
@@ -80,10 +74,6 @@ const Index = () => {
     setTripInfo(prev => ({ ...prev, destination: value }));
   };
 
-  const handleGenderChange = (value: Gender) => {
-    setTripInfo(prev => ({ ...prev, gender: value }));
-  };
-
   const handleLuggageSelect = (type: LuggageType) => {
     setTripInfo(prev => ({ ...prev, luggage: type }));
   };
@@ -99,7 +89,7 @@ const Index = () => {
 
   const handleNextStep = () => {
     if (step === 1) {
-      if (!tripInfo.destination || !dateRange?.from || !dateRange?.to || !tripInfo.gender) {
+      if (!tripInfo.destination || !dateRange?.from || !dateRange?.to) {
         toast({
           title: "Información incompleta",
           description: "Por favor, completa todos los campos antes de continuar.",
@@ -149,23 +139,6 @@ const Index = () => {
                 onDateRangeChange={setDateRange} 
               />
             </div>
-            
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Género</label>
-              <Select 
-                value={tripInfo.gender} 
-                onValueChange={(value) => handleGenderChange(value as Gender)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona tu género" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Hombre</SelectItem>
-                  <SelectItem value="female">Mujer</SelectItem>
-                  <SelectItem value="other">Otro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         );
       
@@ -205,6 +178,12 @@ const Index = () => {
       case 3:
         return (
           <div className="space-y-6">
+            {weatherForecasts.length > 0 && (
+              <div className="mb-6">
+                <WeatherForecastComponent forecasts={weatherForecasts} />
+              </div>
+            )}
+            
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">¿Qué actividades realizarás?</label>
               <ActivitiesSelector 
@@ -212,12 +191,6 @@ const Index = () => {
                 onSelect={handleActivityToggle} 
               />
             </div>
-            
-            {weatherForecasts.length > 0 && (
-              <div className="mt-6">
-                <WeatherForecastComponent forecasts={weatherForecasts} />
-              </div>
-            )}
           </div>
         );
         
@@ -252,7 +225,7 @@ const Index = () => {
               </div>
             </div>
             
-            {luggageVolume > 0 && tripInfo.activities.length > 0 && weatherForecasts.length > 0 && (
+            {luggageVolume > 0 && (
               <ClothingSuggestions
                 gender={tripInfo.gender}
                 activities={tripInfo.activities}
@@ -282,7 +255,7 @@ const Index = () => {
               className={`flex flex-1 items-center ${step >= 1 ? 'text-maletapp-blue' : 'text-gray-400'}`}
             >
               <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${step >= 1 ? 'bg-maletapp-blue text-white' : 'bg-gray-200'}`}>
-                <User size={16} />
+                <MapPin size={16} />
               </div>
               <span className="text-sm hidden md:inline">Información</span>
             </div>
@@ -321,13 +294,13 @@ const Index = () => {
             <CardTitle>
               {step === 1 && "Detalles del viaje"}
               {step === 2 && "Selecciona tu equipaje"}
-              {step === 3 && "Actividades y clima"}
+              {step === 3 && "Clima y actividades"}
               {step === 4 && "Recomendaciones para tu maleta"}
             </CardTitle>
             <CardDescription>
-              {step === 1 && "Indícanos a dónde viajas, cuándo y algunos datos personales"}
+              {step === 1 && "Indícanos a dónde viajas y cuándo"}
               {step === 2 && "Elige el tipo de equipaje que vas a llevar"}
-              {step === 3 && "Selecciona las actividades que realizarás durante tu viaje"}
+              {step === 3 && "Revisa el clima y selecciona las actividades que realizarás"}
               {step === 4 && "Aquí tienes nuestras recomendaciones para hacer tu maleta"}
             </CardDescription>
           </CardHeader>

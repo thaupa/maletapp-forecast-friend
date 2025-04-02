@@ -1,13 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ClothingItem, Gender, ActivityType, WeatherForecast, ClothingCategory, ClothingRecommendation } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, BookOpenCheck, PackageCheck } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CLOTHING_ITEMS } from '@/data/mockData';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ClothingSuggestionsProps {
   gender: Gender;
@@ -22,6 +23,8 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   forecasts, 
   luggageVolume 
 }) => {
+  const [activeTab, setActiveTab] = useState<string>("recommended");
+  
   if (!forecasts.length) {
     return null;
   }
@@ -36,7 +39,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   const duration = forecasts.length;
   
   // Si no se seleccionaron actividades, usar todas para recomendaciones básicas
-  const effectiveActivities = activities.length > 0 ? activities : ['beach', 'hiking', 'sports', 'formal'];
+  const effectiveActivities = activities.length > 0 ? activities : ['beach', 'city', 'sports', 'formal'];
 
   // Filtrar ropa adecuada para el género, actividades y clima
   const suitableClothing = CLOTHING_ITEMS.filter(item => {
@@ -115,6 +118,15 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     }
   };
 
+  // Calcular todas las recomendaciones ideales sin límite de volumen
+  const calculateIdealRecommendations = (): ClothingRecommendation[] => {
+    return suitableClothing.map(item => ({
+      item,
+      recommendedQuantity: calculateRecommendedQuantity(item),
+      actualQuantity: calculateRecommendedQuantity(item)
+    }));
+  };
+
   // Algoritmo para empacar respetando el volumen de la maleta
   const packLuggage = (): ClothingRecommendation[] => {
     let remainingVolume = luggageVolume;
@@ -179,10 +191,21 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return packingList;
   };
   
+  const idealPackingList = calculateIdealRecommendations();
   const packingList = packLuggage();
   
-  // Agrupar por categoría para mostrar
-  const groupedItems = packingList.reduce((acc, item) => {
+  // Agrupar por categoría las recomendaciones ideales
+  const groupedIdealItems = idealPackingList.reduce((acc, item) => {
+    const category = item.item.category;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(item);
+    return acc;
+  }, {} as Record<ClothingCategory, ClothingRecommendation[]>);
+  
+  // Agrupar por categoría las recomendaciones que caben en la maleta
+  const groupedPackingItems = packingList.reduce((acc, item) => {
     const category = item.item.category;
     if (!acc[category]) {
       acc[category] = [];
@@ -219,75 +242,121 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return item.name;
   };
 
+  const renderClothingList = (
+    groupedItems: Record<ClothingCategory, ClothingRecommendation[]>,
+    showLuggageCapacity: boolean = false
+  ) => {
+    return (
+      <ScrollArea className="h-[400px] pr-4">
+        <div className="space-y-4">
+          {Object.entries(groupedItems).map(([category, items], index) => (
+            <Collapsible key={category} defaultOpen={true} className="mb-4">
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-2 px-1 hover:bg-gray-50 rounded">
+                <h4 className="font-medium text-sm text-maletapp-blue">
+                  {getCategoryLabel(category as ClothingCategory)}
+                </h4>
+                <Badge variant="outline">{items.length}</Badge>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent>
+                <ul className="space-y-2 mt-2">
+                  {items.map((recommendation, itemIndex) => (
+                    <li key={`${category}-${itemIndex}`} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center">
+                        {showLuggageCapacity ? (
+                          recommendation.actualQuantity >= recommendation.recommendedQuantity ? (
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                          ) : (
+                            <AlertCircle className="h-4 w-4 text-amber-500 mr-2 flex-shrink-0" />
+                          )
+                        ) : (
+                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                        )}
+                        <span>{getDetailedItemName(recommendation.item)}</span>
+                      </div>
+                      {showLuggageCapacity ? (
+                        <div className="flex items-center space-x-1 text-sm">
+                          <span className={`font-medium ${recommendation.actualQuantity < recommendation.recommendedQuantity ? 'text-amber-500' : 'text-green-600'}`}>
+                            {recommendation.actualQuantity}
+                          </span>
+                          <span className="text-gray-400">/</span>
+                          <span className="text-gray-500">
+                            {recommendation.recommendedQuantity}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="text-sm">
+                          <span className="font-medium text-gray-700">
+                            {recommendation.recommendedQuantity} {recommendation.recommendedQuantity > 1 ? 'unidades' : 'unidad'}
+                          </span>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                
+                {index < Object.keys(groupedItems).length - 1 && (
+                  <Separator className="my-3" />
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
+        </div>
+      </ScrollArea>
+    );
+  };
+
   return (
     <div className="w-full">
       <h3 className="font-medium text-lg mb-3">Sugerencias de ropa para tu viaje</h3>
       
       <Card className="w-full">
         <CardContent className="p-4">
-          <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-4">
-              {Object.entries(groupedItems).map(([category, items], index) => (
-                <Collapsible key={category} defaultOpen={true} className="mb-4">
-                  <CollapsibleTrigger className="flex items-center justify-between w-full py-2 px-1 hover:bg-gray-50 rounded">
-                    <h4 className="font-medium text-sm text-maletapp-blue">
-                      {getCategoryLabel(category as ClothingCategory)}
-                    </h4>
-                    <Badge variant="outline">{items.length}</Badge>
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent>
-                    <ul className="space-y-2 mt-2">
-                      {items.map((recommendation, itemIndex) => (
-                        <li key={`${category}-${itemIndex}`} className="flex items-center justify-between text-sm">
-                          <div className="flex items-center">
-                            {recommendation.actualQuantity >= recommendation.recommendedQuantity ? (
-                              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                            ) : (
-                              <AlertCircle className="h-4 w-4 text-amber-500 mr-2 flex-shrink-0" />
-                            )}
-                            <span>{getDetailedItemName(recommendation.item)}</span>
-                          </div>
-                          <div className="flex items-center space-x-1 text-sm">
-                            <span className={`font-medium ${recommendation.actualQuantity < recommendation.recommendedQuantity ? 'text-amber-500' : 'text-green-600'}`}>
-                              {recommendation.actualQuantity}
-                            </span>
-                            <span className="text-gray-400">/</span>
-                            <span className="text-gray-500">
-                              {recommendation.recommendedQuantity}
-                            </span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    {index < Object.keys(groupedItems).length - 1 && (
-                      <Separator className="my-3" />
-                    )}
-                  </CollapsibleContent>
-                </Collapsible>
-              ))}
-            </div>
-          </ScrollArea>
-          
-          <div className="mt-6 pt-3 border-t">
-            <div className="text-sm mb-2">
-              <span className="font-medium">Espacio utilizado (ropa doblada):</span> {Math.round(usedVolume / 1000)} de {Math.round(luggageVolume / 1000)} litros ({volumePercentage}%)
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
-                className={`h-2.5 rounded-full ${volumePercentage > 85 ? 'bg-red-500' : volumePercentage > 70 ? 'bg-amber-500' : 'bg-green-500'}`} 
-                style={{ width: `${Math.min(volumePercentage, 100)}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">
-              {volumePercentage > 85 
-                ? 'Tu maleta está muy llena, considera quitar algunos artículos.' 
-                : volumePercentage > 70 
-                  ? 'Tu maleta está bastante llena, pero aún tienes espacio.' 
-                  : 'Tienes suficiente espacio en tu maleta.'}
-            </p>
-          </div>
+          <Tabs defaultValue="recommended" className="w-full" onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="recommended" className="flex items-center gap-2">
+                <BookOpenCheck className="h-4 w-4" />
+                <span>Recomendación</span>
+              </TabsTrigger>
+              <TabsTrigger value="luggage" className="flex items-center gap-2">
+                <PackageCheck className="h-4 w-4" />
+                <span>Dentro de tu maleta</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="recommended">
+              <div className="mb-4 p-2 bg-blue-50 text-blue-800 rounded-lg text-sm">
+                Esta es la cantidad ideal de ropa para tu viaje, sin tener en cuenta el espacio de tu maleta.
+              </div>
+              {renderClothingList(groupedIdealItems)}
+            </TabsContent>
+            
+            <TabsContent value="luggage">
+              <div className="mb-4 p-2 bg-blue-50 text-blue-800 rounded-lg text-sm">
+                Esta es la ropa que realmente cabrá en tu maleta, teniendo en cuenta el espacio disponible.
+              </div>
+              {renderClothingList(groupedPackingItems, true)}
+              
+              <div className="mt-6 pt-3 border-t">
+                <div className="text-sm mb-2">
+                  <span className="font-medium">Espacio utilizado (ropa doblada):</span> {Math.round(usedVolume / 1000)} de {Math.round(luggageVolume / 1000)} litros ({volumePercentage}%)
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className={`h-2.5 rounded-full ${volumePercentage > 85 ? 'bg-red-500' : volumePercentage > 70 ? 'bg-amber-500' : 'bg-green-500'}`} 
+                    style={{ width: `${Math.min(volumePercentage, 100)}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {volumePercentage > 85 
+                    ? 'Tu maleta está muy llena, considera quitar algunos artículos.' 
+                    : volumePercentage > 70 
+                      ? 'Tu maleta está bastante llena, pero aún tienes espacio.' 
+                      : 'Tienes suficiente espacio en tu maleta.'}
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>

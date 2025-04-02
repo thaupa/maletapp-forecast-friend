@@ -55,8 +55,8 @@ export const ACTIVITIES: Activity[] = [
     image: 'beach'
   },
   {
-    type: 'hiking',
-    name: 'Senderismo',
+    type: 'city',
+    name: 'Explorar la ciudad',
     image: 'hiking'
   },
   {
@@ -76,7 +76,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Boxers',
     forGender: ['male'],
     forWeather: 'neutral',
-    forActivity: ['beach', 'hiking', 'sports', 'formal'],
+    forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 100,
     category: 'underwear'
   },
@@ -84,7 +84,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Bragas/Tangas',
     forGender: ['female'],
     forWeather: 'neutral',
-    forActivity: ['beach', 'hiking', 'sports', 'formal'],
+    forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 80,
     category: 'underwear'
   },
@@ -92,7 +92,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Sujetador',
     forGender: ['female'],
     forWeather: 'neutral',
-    forActivity: ['beach', 'hiking', 'sports', 'formal'],
+    forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 150,
     category: 'underwear'
   },
@@ -100,7 +100,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Calcetines',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['hiking', 'sports', 'formal'],
+    forActivity: ['city', 'sports', 'formal'],
     volume: 100,
     category: 'socks'
   },
@@ -108,7 +108,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Pijama',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['beach', 'hiking', 'sports', 'formal'],
+    forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 500,
     category: 'sleepwear'
   },
@@ -117,7 +117,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Camiseta',
     forGender: 'all',
     forWeather: 'warm',
-    forActivity: ['beach', 'hiking', 'sports'],
+    forActivity: ['beach', 'city', 'sports'],
     volume: 250,
     category: 'top'
   },
@@ -125,7 +125,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Camisa manga larga',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['hiking', 'formal'],
+    forActivity: ['city', 'formal'],
     volume: 350,
     category: 'top'
   },
@@ -133,7 +133,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Jersey/Sudadera',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['beach', 'hiking', 'sports'],
+    forActivity: ['beach', 'city', 'sports'],
     volume: 800,
     category: 'top'
   },
@@ -142,7 +142,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Chaqueta',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['hiking', 'sports', 'formal'],
+    forActivity: ['city', 'sports', 'formal'],
     volume: 1200,
     category: 'outerwear'
   },
@@ -150,7 +150,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Abrigo',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['formal', 'hiking'],
+    forActivity: ['formal', 'city'],
     volume: 2000,
     category: 'outerwear'
   },
@@ -158,7 +158,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Impermeable',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['hiking'],
+    forActivity: ['city'],
     volume: 1000,
     category: 'outerwear'
   },
@@ -167,7 +167,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Pantalones',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['hiking', 'formal'],
+    forActivity: ['city', 'formal'],
     volume: 600,
     category: 'bottom'
   },
@@ -175,7 +175,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Vaqueros',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['beach', 'hiking', 'sports'],
+    forActivity: ['beach', 'city', 'sports'],
     volume: 800,
     category: 'bottom'
   },
@@ -191,7 +191,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Pantalones cortos',
     forGender: 'all',
     forWeather: 'warm',
-    forActivity: ['sports', 'beach', 'hiking'],
+    forActivity: ['sports', 'beach', 'city'],
     volume: 300,
     category: 'bottom'
   },
@@ -208,7 +208,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Zapatillas deportivas',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['sports', 'hiking'],
+    forActivity: ['sports', 'city'],
     volume: 1500,
     category: 'footwear'
   },
@@ -224,7 +224,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Botas de montaña',
     forGender: 'all',
     forWeather: 'neutral',
-    forActivity: ['hiking'],
+    forActivity: ['city'],
     volume: 2000,
     category: 'footwear'
   },
@@ -233,7 +233,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Sombrero/Gorra',
     forGender: 'all',
     forWeather: 'warm',
-    forActivity: ['beach', 'hiking', 'sports'],
+    forActivity: ['beach', 'city', 'sports'],
     volume: 300,
     category: 'accessory'
   },
@@ -249,7 +249,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Guantes',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['hiking'],
+    forActivity: ['city'],
     volume: 200,
     category: 'accessory'
   },
@@ -257,7 +257,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Bufanda',
     forGender: 'all',
     forWeather: 'cold',
-    forActivity: ['hiking', 'formal'],
+    forActivity: ['city', 'formal'],
     volume: 300,
     category: 'accessory'
   },
@@ -290,7 +290,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Gafas de sol',
     forGender: 'all',
     forWeather: 'warm',
-    forActivity: ['beach', 'hiking', 'sports'],
+    forActivity: ['beach', 'city', 'sports'],
     volume: 200,
     category: 'accessory'
   },
@@ -298,7 +298,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     name: 'Crema solar',
     forGender: 'all',
     forWeather: 'warm',
-    forActivity: ['beach', 'hiking', 'sports'],
+    forActivity: ['beach', 'city', 'sports'],
     volume: 200,
     category: 'toiletry'
   },

@@ -5,7 +5,8 @@ import { LUGGAGE_TYPES } from '@/data/mockData';
 import { LuggageType } from '@/types';
 import { 
   Backpack, 
-  BaggageClaim
+  BaggageClaim,
+  Weight
 } from 'lucide-react';
 
 interface LuggageSelectorProps {
@@ -47,9 +48,16 @@ const LuggageSelector: React.FC<LuggageSelectorProps> = ({ selected, onSelect })
           <span className="text-xs text-gray-500 text-center mt-1">
             {luggage.dimensions.width} x {luggage.dimensions.height} x {luggage.dimensions.depth} cm
           </span>
-          <span className="text-xs text-gray-600 font-semibold mt-1">
-            {(luggage.volume / 1000).toFixed(1)} litros
-          </span>
+          <div className="flex items-center justify-between w-full mt-1 px-2">
+            <span className="text-xs text-gray-600 font-semibold flex items-center">
+              <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+              {(luggage.usableVolume / 1000).toFixed(1)}L
+            </span>
+            <span className="text-xs text-gray-600 font-semibold flex items-center">
+              <span className="inline-block w-2 h-2 bg-orange-500 rounded-full mr-1"></span>
+              {luggage.maxWeight}kg
+            </span>
+          </div>
         </div>
       ))}
     </div>

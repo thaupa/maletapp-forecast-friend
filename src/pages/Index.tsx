@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DateRange } from "react-day-picker";
 import { 
@@ -29,7 +28,7 @@ const Index = () => {
     destination: '',
     startDate: null,
     endDate: null,
-    gender: 'other', // We'll keep this in the state but not show it in the UI
+    gender: 'other',
     luggage: null,
     activities: [],
     weatherForecasts: []
@@ -51,7 +50,7 @@ const Index = () => {
     if (tripInfo.luggage) {
       const selectedLuggage = LUGGAGE_TYPES.find(l => l.type === tripInfo.luggage);
       if (selectedLuggage) {
-        setLuggageVolume(selectedLuggage.volume);
+        setLuggageVolume(selectedLuggage.usableVolume);
       }
     } else {
       setLuggageVolume(0);
@@ -164,9 +163,15 @@ const Index = () => {
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-500">Volumen:</p>
+                    <p className="text-gray-500">Volumen útil:</p>
                     <p className="font-medium">
-                      {(LUGGAGE_TYPES.find(l => l.type === tripInfo.luggage)?.volume! / 1000).toFixed(1)} litros
+                      {(LUGGAGE_TYPES.find(l => l.type === tripInfo.luggage)?.usableVolume! / 1000).toFixed(1)} litros
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Peso máximo:</p>
+                    <p className="font-medium">
+                      {LUGGAGE_TYPES.find(l => l.type === tripInfo.luggage)?.maxWeight} kg
                     </p>
                   </div>
                 </div>

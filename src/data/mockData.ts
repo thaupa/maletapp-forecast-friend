@@ -1,3 +1,4 @@
+
 import { LuggageInfo, Activity, ClothingItem } from '../types';
 
 export const LUGGAGE_TYPES: LuggageInfo[] = [
@@ -10,6 +11,8 @@ export const LUGGAGE_TYPES: LuggageInfo[] = [
       depth: 20
     },
     volume: 24000,
+    usableVolume: 20400, // 85% del volumen total
+    maxWeight: 7,
     image: 'backpack'
   },
   {
@@ -21,6 +24,8 @@ export const LUGGAGE_TYPES: LuggageInfo[] = [
       depth: 20
     },
     volume: 44000,
+    usableVolume: 37400, // 85% del volumen total
+    maxWeight: 10,
     image: 'small-suitcase'
   },
   {
@@ -32,6 +37,8 @@ export const LUGGAGE_TYPES: LuggageInfo[] = [
       depth: 25
     },
     volume: 81250,
+    usableVolume: 69062.5, // 85% del volumen total
+    maxWeight: 15,
     image: 'medium-suitcase'
   },
   {
@@ -43,6 +50,8 @@ export const LUGGAGE_TYPES: LuggageInfo[] = [
       depth: 30
     },
     volume: 168000,
+    usableVolume: 142800, // 85% del volumen total
+    maxWeight: 23,
     image: 'large-suitcase'
   }
 ];
@@ -56,7 +65,7 @@ export const ACTIVITIES: Activity[] = [
   {
     type: 'city',
     name: 'Explorar la ciudad',
-    image: 'hiking'
+    image: 'city'
   },
   {
     type: 'sports',
@@ -77,6 +86,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 100,
+    compressedVolume: 80, // 80% del volumen original
+    weight: 0.05,
+    priority: 10, // Alta prioridad
     category: 'underwear'
   },
   {
@@ -85,6 +97,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 80,
+    compressedVolume: 64,
+    weight: 0.03,
+    priority: 10,
     category: 'underwear'
   },
   {
@@ -93,6 +108,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 150,
+    compressedVolume: 120,
+    weight: 0.08,
+    priority: 10,
     category: 'underwear'
   },
   {
@@ -101,6 +119,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['city', 'sports', 'formal'],
     volume: 100,
+    compressedVolume: 80,
+    weight: 0.05,
+    priority: 9,
     category: 'socks'
   },
   {
@@ -109,6 +130,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['sports'],
     volume: 100,
+    compressedVolume: 80,
+    weight: 0.05,
+    priority: 8,
     category: 'socks'
   },
   {
@@ -117,6 +141,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports', 'formal'],
     volume: 500,
+    compressedVolume: 400,
+    weight: 0.3,
+    priority: 7,
     category: 'sleepwear'
   },
   
@@ -126,6 +153,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach', 'city', 'sports'],
     volume: 250,
+    compressedVolume: 200,
+    weight: 0.2,
+    priority: 9,
     category: 'top'
   },
   {
@@ -134,6 +164,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['city', 'formal'],
     volume: 300,
+    compressedVolume: 240,
+    weight: 0.25,
+    priority: 8,
     category: 'top'
   },
   {
@@ -142,6 +175,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['city', 'formal'],
     volume: 350,
+    compressedVolume: 280,
+    weight: 0.3,
+    priority: 7,
     category: 'top'
   },
   {
@@ -150,6 +186,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['beach', 'city', 'sports'],
     volume: 800,
+    compressedVolume: 640,
+    weight: 0.6,
+    priority: 7,
     category: 'top'
   },
   
@@ -159,6 +198,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city', 'sports', 'formal'],
     volume: 1200,
+    compressedVolume: 960,
+    weight: 1.0,
+    priority: 8,
     category: 'outerwear'
   },
   {
@@ -167,6 +209,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city', 'sports'],
     volume: 1500,
+    compressedVolume: 1200,
+    weight: 1.2,
+    priority: 7,
     category: 'outerwear'
   },
   {
@@ -175,6 +220,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['formal', 'city'],
     volume: 2000,
+    compressedVolume: 1600,
+    weight: 1.5,
+    priority: 7,
     category: 'outerwear'
   },
   {
@@ -183,6 +231,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city'],
     volume: 1000,
+    compressedVolume: 800,
+    weight: 0.8,
+    priority: 6,
     category: 'outerwear'
   },
   
@@ -192,6 +243,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['city', 'formal'],
     volume: 600,
+    compressedVolume: 480,
+    weight: 0.5,
+    priority: 8,
     category: 'bottom'
   },
   {
@@ -200,6 +254,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports'],
     volume: 800,
+    compressedVolume: 640,
+    weight: 0.7,
+    priority: 8,
     category: 'bottom'
   },
   {
@@ -208,6 +265,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['sports', 'beach', 'city'],
     volume: 300,
+    compressedVolume: 240,
+    weight: 0.3,
+    priority: 7,
     category: 'bottom'
   },
   {
@@ -216,6 +276,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach', 'formal'],
     volume: 500,
+    compressedVolume: 400,
+    weight: 0.3,
+    priority: 6,
     category: 'bottom'
   },
   
@@ -225,6 +288,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['formal'],
     volume: 1200,
+    compressedVolume: 1200, // El calzado no se comprime
+    weight: 0.8,
+    priority: 7,
     category: 'footwear'
   },
   {
@@ -233,6 +299,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['city'],
     volume: 1200,
+    compressedVolume: 1200,
+    weight: 0.7,
+    priority: 8,
     category: 'footwear'
   },
   {
@@ -241,6 +310,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['sports', 'city'],
     volume: 1500,
+    compressedVolume: 1500,
+    weight: 0.8,
+    priority: 7,
     category: 'footwear'
   },
   {
@@ -249,6 +321,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach'],
     volume: 600,
+    compressedVolume: 600,
+    weight: 0.3,
+    priority: 6,
     category: 'footwear'
   },
   {
@@ -257,6 +332,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city'],
     volume: 2000,
+    compressedVolume: 2000,
+    weight: 1.2,
+    priority: 7,
     category: 'footwear'
   },
   
@@ -266,6 +344,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['formal', 'city'],
     volume: 200,
+    compressedVolume: 200, // Los accesorios rígidos no se comprimen
+    weight: 0.2,
+    priority: 6,
     category: 'accessory'
   },
   {
@@ -274,6 +355,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach', 'city', 'sports'],
     volume: 300,
+    compressedVolume: 300,
+    weight: 0.1,
+    priority: 5,
     category: 'accessory'
   },
   {
@@ -282,6 +366,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach'],
     volume: 400,
+    compressedVolume: 400,
+    weight: 0.2,
+    priority: 5,
     category: 'accessory'
   },
   {
@@ -290,6 +377,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city'],
     volume: 200,
+    compressedVolume: 160,
+    weight: 0.1,
+    priority: 6,
     category: 'accessory'
   },
   {
@@ -298,6 +388,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city', 'formal'],
     volume: 300,
+    compressedVolume: 240,
+    weight: 0.2,
+    priority: 6,
     category: 'accessory'
   },
   {
@@ -306,6 +399,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'cold',
     forActivity: ['city', 'formal'],
     volume: 600,
+    compressedVolume: 600,
+    weight: 0.4,
+    priority: 5,
     category: 'accessory'
   },
   {
@@ -314,6 +410,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach', 'city', 'sports'],
     volume: 200,
+    compressedVolume: 200,
+    weight: 0.1,
+    priority: 7,
     category: 'accessory'
   },
   {
@@ -322,6 +421,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'neutral',
     forActivity: ['formal'],
     volume: 100,
+    compressedVolume: 80,
+    weight: 0.05,
+    priority: 5,
     category: 'accessory'
   },
   
@@ -331,6 +433,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach'],
     volume: 300,
+    compressedVolume: 240,
+    weight: 0.2,
+    priority: 7,
     category: 'swimwear'
   },
   {
@@ -339,6 +444,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach'],
     volume: 250,
+    compressedVolume: 200,
+    weight: 0.15,
+    priority: 7,
     category: 'swimwear'
   },
   {
@@ -347,6 +455,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach'],
     volume: 1000,
+    compressedVolume: 800,
+    weight: 0.5,
+    priority: 6,
     category: 'beach'
   },
   
@@ -356,6 +467,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach', 'city', 'sports'],
     volume: 200,
+    compressedVolume: 200, // Las botellas no se comprimen
+    weight: 0.2,
+    priority: 8,
     category: 'toiletry'
   },
   {
@@ -364,6 +478,9 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forWeather: 'warm',
     forActivity: ['beach'],
     volume: 200,
+    compressedVolume: 200,
+    weight: 0.2,
+    priority: 6,
     category: 'toiletry'
   }
 ];

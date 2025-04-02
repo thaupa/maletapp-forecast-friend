@@ -12,6 +12,8 @@ export interface LuggageInfo {
     depth: number;
   };
   volume: number;
+  usableVolume: number; // Capacidad útil (85% del volumen total)
+  maxWeight: number; // Peso máximo en kg
   image: string;
 }
 
@@ -48,7 +50,10 @@ export interface ClothingItem {
   forGender: Gender[] | 'all';
   forWeather: 'cold' | 'warm' | 'neutral';
   forActivity: ActivityType[];
-  volume: number;
+  volume: number; // Volumen sin comprimir en cm³
+  compressedVolume: number; // Volumen comprimido en cm³
+  weight: number; // Peso en kg
+  priority: number; // 1-10, siendo 10 la máxima prioridad
   category: ClothingCategory;
 }
 

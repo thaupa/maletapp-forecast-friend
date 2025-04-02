@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ClothingItem, Gender, ActivityType, WeatherForecast, ClothingCategory, ClothingRecommendation } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, AlertCircle, BookOpenCheck, PackageCheck } from 'lucide-react';
+import { CheckCircle, AlertCircle, BookOpenCheck, PackageCheck, Umbrella, Sun, CloudRain } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CLOTHING_ITEMS } from '@/data/mockData';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +35,18 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   const isCold = averageTemp < 15;
   const weatherType = isWarm ? 'warm' : (isCold ? 'cold' : 'neutral');
   
+  // Comprobar si es probable que llueva (condiciones nubladas)
+  const mightRain = forecasts.some(f => 
+    f.conditions.toLowerCase().includes('nublado') || 
+    f.conditions.toLowerCase().includes('frío')
+  );
+  
+  // Comprobar si hace mucho sol
+  const isSunny = forecasts.some(f => 
+    f.conditions.toLowerCase().includes('soleado') || 
+    f.conditions.toLowerCase().includes('despejado')
+  );
+  
   // Duración del viaje (en días)
   const duration = forecasts.length;
   
@@ -53,7 +65,16 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     // Verificar si el artículo es adecuado para el clima
     const isWeatherSuitable = item.forWeather === 'neutral' || item.forWeather === weatherType;
     
-    return isGenderSuitable && isActivitySuitable && isWeatherSuitable;
+    // Casos especiales
+    const isSpecialItem = 
+      // Paraguas si hay posibilidad de lluvia
+      (item.name === 'Paraguas' && mightRain) ||
+      // Gorra/Sombrero si hay mucho sol
+      ((item.name === 'Gorra' || item.name === 'Sombrero') && isSunny) ||
+      // Bañador/Bikini si hay actividades de playa
+      ((item.name === 'Bañador' || item.name === 'Bikini' || item.name === 'Toalla de playa') && activities.includes('beach'));
+    
+    return (isGenderSuitable && isActivitySuitable && isWeatherSuitable) || isSpecialItem;
   });
 
   // Calcular las cantidades recomendadas según la duración del viaje y tipo de prenda
@@ -79,8 +100,14 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       case 'sleepwear':
         return 1; // Un pijama
       case 'accessory':
+        if (item.name === 'Paraguas' && mightRain) return 1;
+        if ((item.name === 'Gorra' || item.name === 'Sombrero') && isSunny) return 1;
+        if (item.name === 'Gafas de sol' && isSunny) return 1;
+        return 1;
       case 'swimwear':
       case 'beach':
+        if (activities.includes('beach')) return 1;
+        return 0;
       case 'toiletry':
         return 1; // Generalmente uno de cada
       default:
@@ -124,7 +151,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       item,
       recommendedQuantity: calculateRecommendedQuantity(item),
       actualQuantity: calculateRecommendedQuantity(item)
-    }));
+    })).filter(rec => rec.recommendedQuantity > 0); // Filtrar artículos con cantidad 0
   };
 
   // Algoritmo para empacar respetando el volumen de la maleta
@@ -162,6 +189,10 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       
       categorizedItems[category].forEach(item => {
         const recommendedQty = calculateRecommendedQuantity(item);
+        
+        // Si la cantidad recomendada es 0, no incluir
+        if (recommendedQty === 0) return;
+        
         let actualQty = 0;
         
         // Calculamos el volumen real de cada prenda doblada
@@ -242,6 +273,34 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return item.name;
   };
 
+  // Generar mensajes de recomendación basados en el clima
+  const getWeatherRecommendations = () => {
+    const recommendations = [];
+    
+    if (isSunny) {
+      recommendations.push({
+        icon: <Sun className="h-4 w-4 text-amber-500 mr-2" />,
+        message: "No olvides llevar gorra y gafas de sol, ¡el tiempo será soleado!"
+      });
+    }
+    
+    if (mightRain) {
+      recommendations.push({
+        icon: <Umbrella className="h-4 w-4 text-blue-500 mr-2" />,
+        message: "Hay posibilidad de lluvia, te recomendamos llevar paraguas"
+      });
+    }
+    
+    if (activities.includes('beach') && isWarm) {
+      recommendations.push({
+        icon: <Sun className="h-4 w-4 text-orange-500 mr-2" />,
+        message: "Perfecto para la playa, ¡no olvides tu bañador y crema solar!"
+      });
+    }
+    
+    return recommendations;
+  };
+
   const renderClothingList = (
     groupedItems: Record<ClothingCategory, ClothingRecommendation[]>,
     showLuggageCapacity: boolean = false
@@ -249,6 +308,18 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return (
       <ScrollArea className="h-[400px] pr-4">
         <div className="space-y-4">
+          {/* Mostrar recomendaciones de clima */}
+          {getWeatherRecommendations().length > 0 && (
+            <div className="mb-4 p-3 bg-blue-50 text-blue-800 rounded-lg text-sm space-y-2">
+              {getWeatherRecommendations().map((rec, idx) => (
+                <div key={idx} className="flex items-center">
+                  {rec.icon}
+                  <span>{rec.message}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          
           {Object.entries(groupedItems).map(([category, items], index) => (
             <Collapsible key={category} defaultOpen={true} className="mb-4">
               <CollapsibleTrigger className="flex items-center justify-between w-full py-2 px-1 hover:bg-gray-50 rounded">

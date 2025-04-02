@@ -1,4 +1,3 @@
-
 import { LuggageInfo, Activity, ClothingItem } from '../types';
 
 export const LUGGAGE_TYPES: LuggageInfo[] = [
@@ -73,7 +72,7 @@ export const ACTIVITIES: Activity[] = [
 
 export const CLOTHING_ITEMS: ClothingItem[] = [
   {
-    name: 'Boxers',
+    name: 'Calzoncillos/Boxers',
     forGender: ['male'],
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports', 'formal'],
@@ -81,7 +80,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'underwear'
   },
   {
-    name: 'Bragas/Tangas',
+    name: 'Bragas',
     forGender: ['female'],
     forWeather: 'neutral',
     forActivity: ['beach', 'city', 'sports', 'formal'],
@@ -105,6 +104,14 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'socks'
   },
   {
+    name: 'Calcetines deportivos',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['sports'],
+    volume: 100,
+    category: 'socks'
+  },
+  {
     name: 'Pijama',
     forGender: 'all',
     forWeather: 'neutral',
@@ -122,6 +129,14 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'top'
   },
   {
+    name: 'Camisa manga corta',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['city', 'formal'],
+    volume: 300,
+    category: 'top'
+  },
+  {
     name: 'Camisa manga larga',
     forGender: 'all',
     forWeather: 'neutral',
@@ -130,7 +145,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'top'
   },
   {
-    name: 'Jersey/Sudadera',
+    name: 'Sudadera',
     forGender: 'all',
     forWeather: 'cold',
     forActivity: ['beach', 'city', 'sports'],
@@ -147,6 +162,14 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'outerwear'
   },
   {
+    name: 'Anorak',
+    forGender: 'all',
+    forWeather: 'cold',
+    forActivity: ['city', 'sports'],
+    volume: 1500,
+    category: 'outerwear'
+  },
+  {
     name: 'Abrigo',
     forGender: 'all',
     forWeather: 'cold',
@@ -155,7 +178,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'outerwear'
   },
   {
-    name: 'Impermeable',
+    name: 'Impermeable/Chubasquero',
     forGender: 'all',
     forWeather: 'cold',
     forActivity: ['city'],
@@ -164,7 +187,7 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
   },
   
   {
-    name: 'Pantalones',
+    name: 'Pantalones largos',
     forGender: 'all',
     forWeather: 'neutral',
     forActivity: ['city', 'formal'],
@@ -180,19 +203,19 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'bottom'
   },
   {
-    name: 'Falda',
-    forGender: ['female'],
-    forWeather: 'warm',
-    forActivity: ['beach', 'formal'],
-    volume: 500,
-    category: 'bottom'
-  },
-  {
     name: 'Pantalones cortos',
     forGender: 'all',
     forWeather: 'warm',
     forActivity: ['sports', 'beach', 'city'],
     volume: 300,
+    category: 'bottom'
+  },
+  {
+    name: 'Falda',
+    forGender: ['female'],
+    forWeather: 'warm',
+    forActivity: ['beach', 'formal'],
+    volume: 500,
     category: 'bottom'
   },
   
@@ -201,6 +224,14 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     forGender: 'all',
     forWeather: 'neutral',
     forActivity: ['formal'],
+    volume: 1200,
+    category: 'footwear'
+  },
+  {
+    name: 'Zapatillas',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['city'],
     volume: 1200,
     category: 'footwear'
   },
@@ -221,16 +252,24 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'footwear'
   },
   {
-    name: 'Botas de montaña',
+    name: 'Botas',
     forGender: 'all',
-    forWeather: 'neutral',
+    forWeather: 'cold',
     forActivity: ['city'],
     volume: 2000,
     category: 'footwear'
   },
   
   {
-    name: 'Sombrero/Gorra',
+    name: 'Cinturón',
+    forGender: 'all',
+    forWeather: 'neutral',
+    forActivity: ['formal', 'city'],
+    volume: 200,
+    category: 'accessory'
+  },
+  {
+    name: 'Gorra',
     forGender: 'all',
     forWeather: 'warm',
     forActivity: ['beach', 'city', 'sports'],
@@ -238,11 +277,11 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'accessory'
   },
   {
-    name: 'Cinturón',
+    name: 'Sombrero',
     forGender: 'all',
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 200,
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 400,
     category: 'accessory'
   },
   {
@@ -262,29 +301,12 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'accessory'
   },
   {
-    name: 'Corbata',
-    forGender: ['male'],
-    forWeather: 'neutral',
-    forActivity: ['formal'],
-    volume: 100,
+    name: 'Paraguas',
+    forGender: 'all',
+    forWeather: 'cold',
+    forActivity: ['city', 'formal'],
+    volume: 600,
     category: 'accessory'
-  },
-  
-  {
-    name: 'Bañador/Bikini',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach'],
-    volume: 300,
-    category: 'swimwear'
-  },
-  {
-    name: 'Toalla de playa',
-    forGender: 'all',
-    forWeather: 'warm',
-    forActivity: ['beach'],
-    volume: 1000,
-    category: 'beach'
   },
   {
     name: 'Gafas de sol',
@@ -295,6 +317,40 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     category: 'accessory'
   },
   {
+    name: 'Corbata',
+    forGender: ['male'],
+    forWeather: 'neutral',
+    forActivity: ['formal'],
+    volume: 100,
+    category: 'accessory'
+  },
+  
+  {
+    name: 'Bañador',
+    forGender: ['male'],
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 300,
+    category: 'swimwear'
+  },
+  {
+    name: 'Bikini',
+    forGender: ['female'],
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 250,
+    category: 'swimwear'
+  },
+  {
+    name: 'Toalla de playa',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 1000,
+    category: 'beach'
+  },
+  
+  {
     name: 'Crema solar',
     forGender: 'all',
     forWeather: 'warm',
@@ -302,6 +358,14 @@ export const CLOTHING_ITEMS: ClothingItem[] = [
     volume: 200,
     category: 'toiletry'
   },
+  {
+    name: 'After-sun',
+    forGender: 'all',
+    forWeather: 'warm',
+    forActivity: ['beach'],
+    volume: 200,
+    category: 'toiletry'
+  }
 ];
 
 export const POPULAR_CITIES = [

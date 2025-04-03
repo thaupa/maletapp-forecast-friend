@@ -16,9 +16,10 @@ import LuggageSelector from '@/components/LuggageSelector';
 import ActivitiesSelector from '@/components/ActivitiesSelector';
 import WeatherForecastComponent from '@/components/WeatherForecast';
 import ClothingSuggestions from '@/components/ClothingSuggestions';
+import ShareResultsDialog from '@/components/ShareResultsDialog';
 import { LUGGAGE_TYPES, generateWeatherForecast } from '@/data/mockData';
 import { BaggageClaim, Calendar, CloudSun, MapPin } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { toast } = useToast();
@@ -35,6 +36,10 @@ const Index = () => {
   });
   const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
   const [luggageVolume, setLuggageVolume] = useState<number>(0);
+  const [usedVolume, setUsedVolume] = useState<number>(0);
+  const [usedWeight, setUsedWeight] = useState<number>(0);
+  const [clothingItems, setClothingItems] = useState<any[]>([]);
+  const [showShareDialog, setShowShareDialog] = useState<boolean>(false);
 
   useEffect(() => {
     if (dateRange?.from) {
@@ -86,6 +91,12 @@ const Index = () => {
     });
   };
 
+  const handleClothingUpdate = (items: any[], volume: number, weight: number) => {
+    setClothingItems(items);
+    setUsedVolume(volume);
+    setUsedWeight(weight);
+  };
+
   const handleNextStep = () => {
     if (step === 1) {
       if (!tripInfo.destination || !dateRange?.from || !dateRange?.to) {
@@ -109,6 +120,8 @@ const Index = () => {
 
     if (step < 4) {
       setStep(step + 1);
+    } else {
+      setShowShareDialog(true);
     }
   };
 
@@ -236,6 +249,7 @@ const Index = () => {
                 activities={tripInfo.activities}
                 forecasts={weatherForecasts}
                 luggageVolume={luggageVolume}
+                onClothingUpdate={handleClothingUpdate}
               />
             )}
           </div>
@@ -324,11 +338,19 @@ const Index = () => {
           </Button>
           <Button
             onClick={handleNextStep}
-            disabled={step === 4}
           >
             {step < 4 ? 'Siguiente' : 'Finalizar'}
           </Button>
         </div>
+
+        <ShareResultsDialog 
+          open={showShareDialog} 
+          onOpenChange={setShowShareDialog}
+          tripInfo={tripInfo}
+          clothingItems={clothingItems}
+          usedVolume={usedVolume}
+          usedWeight={usedWeight}
+        />
       </div>
     </div>
   );

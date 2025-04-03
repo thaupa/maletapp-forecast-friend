@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ClothingItem, Gender, ActivityType, WeatherForecast, ClothingCategory, ClothingRecommendation } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -15,13 +14,15 @@ interface ClothingSuggestionsProps {
   activities: ActivityType[];
   forecasts: WeatherForecast[];
   luggageVolume: number;
+  onClothingUpdate?: (items: any[], volume: number, weight: number) => void;
 }
 
 const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({ 
   gender, 
   activities, 
   forecasts, 
-  luggageVolume 
+  luggageVolume,
+  onClothingUpdate 
 }) => {
   const [activeTab, setActiveTab] = useState<string>("recommended");
   const [optimizationMethod, setOptimizationMethod] = useState<string>("volume"); // 'volume' o 'weight'
@@ -376,6 +377,13 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       </ScrollArea>
     );
   };
+
+  // Call the onClothingUpdate callback if provided
+  React.useEffect(() => {
+    if (onClothingUpdate) {
+      onClothingUpdate(packingList, usedVolume, totalWeight);
+    }
+  }, [packingList, usedVolume, totalWeight, onClothingUpdate]);
 
   return (
     <div className="w-full">

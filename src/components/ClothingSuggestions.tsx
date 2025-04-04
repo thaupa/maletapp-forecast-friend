@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ClothingItem, Gender, ActivityType, WeatherForecast, ClothingCategory, ClothingRecommendation } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,7 +26,6 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   onClothingUpdate 
 }) => {
   const [activeTab, setActiveTab] = useState<string>("recommended");
-  const [optimizationMethod, setOptimizationMethod] = useState<string>("volume"); // 'volume' o 'weight'
   
   if (!forecasts.length) {
     return null;
@@ -40,6 +40,7 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   // Comprobar si es probable que llueva (condiciones nubladas)
   const mightRain = forecasts.some(f => 
     f.conditions.toLowerCase().includes('nublado') || 
+    f.conditions.toLowerCase().includes('lluvia') || 
     f.conditions.toLowerCase().includes('frío')
   );
   
@@ -130,6 +131,21 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
   
   const maxWeight = estimateMaxWeight(luggageVolume);
 
+  // Define the preferred order of clothing categories
+  const categoryOrder: ClothingCategory[] = [
+    'underwear',    // Ropa interior first
+    'socks',        // Calcetines
+    'sleepwear',    // Pijama
+    'bottom',       // Parte inferior
+    'top',          // Parte superior
+    'outerwear',    // Chaquetas/abrigos (part of top)
+    'footwear',     // Calzado
+    'accessory',    // Accesorios
+    'swimwear',     // Ropa de baño
+    'beach',        // Playa
+    'toiletry'      // Aseo
+  ];
+
   // Calcular todas las recomendaciones ideales sin límite de volumen
   const calculateIdealRecommendations = (): ClothingRecommendation[] => {
     return suitableClothing.map(item => ({
@@ -137,101 +153,68 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
       recommendedQuantity: calculateRecommendedQuantity(item),
       actualQuantity: calculateRecommendedQuantity(item)
     })).filter(rec => rec.recommendedQuantity > 0)
-    .sort((a, b) => b.item.priority - a.item.priority); // Ordenar por prioridad
+    .sort((a, b) => {
+      // First sort by category order
+      const categoryA = categoryOrder.indexOf(a.item.category);
+      const categoryB = categoryOrder.indexOf(b.item.category);
+      if (categoryA !== categoryB) return categoryA - categoryB;
+      
+      // Then by priority within the same category
+      return b.item.priority - a.item.priority;
+    });
   };
 
-  // Algoritmo de mochila (Knapsack) para optimizar según volumen o peso
-  const knapsackOptimization = (recommendations: ClothingRecommendation[], usableVolume: number, maxWeight: number, optimizeBy: 'volume' | 'weight'): ClothingRecommendation[] => {
-    // Primero ordenamos por prioridad para asegurar que los elementos más importantes se consideran primero
-    const sortedRecs = [...recommendations].sort((a, b) => b.item.priority - a.item.priority);
-    
+  // Algoritmo simplificado para empacar
+  const packLuggage = (): ClothingRecommendation[] => {
+    const idealRecommendations = calculateIdealRecommendations();
     let remainingVolume = usableVolume;
     let remainingWeight = maxWeight;
     
-    // Lista para almacenar el resultado optimizado
-    const result: ClothingRecommendation[] = [];
-    
-    // Para cada recomendación, intentamos agregar tantas unidades como sea posible
-    for (const rec of sortedRecs) {
-      const optimizedRec = { ...rec, actualQuantity: 0 };
-      
-      // Calculamos cuántas unidades podemos agregar según el volumen y peso disponibles
+    return idealRecommendations.map(rec => {
+      let actualQty = 0;
       for (let i = 0; i < rec.recommendedQuantity; i++) {
-        // Calculamos el volumen real que ocupará esta prenda (comprimida)
-        const itemVolume = rec.item.compressedVolume;
-        const itemWeight = rec.item.weight;
-
-        let canAdd = false;
-        
-        if (optimizeBy === 'volume') {
-          // Optimización por volumen primero, después verificamos peso
-          if (remainingVolume >= itemVolume) {
-            if (remainingWeight >= itemWeight) {
-              canAdd = true;
-            }
-          }
+        if (remainingVolume >= rec.item.compressedVolume && remainingWeight >= rec.item.weight) {
+          actualQty++;
+          remainingVolume -= rec.item.compressedVolume;
+          remainingWeight -= rec.item.weight;
         } else {
-          // Optimización por peso primero, después verificamos volumen
-          if (remainingWeight >= itemWeight) {
-            if (remainingVolume >= itemVolume) {
-              canAdd = true;
-            }
-          }
-        }
-        
-        if (canAdd) {
-          optimizedRec.actualQuantity++;
-          remainingVolume -= itemVolume;
-          remainingWeight -= itemWeight;
-        } else {
-          break; // No podemos agregar más de este ítem
+          break;
         }
       }
-      
-      result.push(optimizedRec);
-    }
-    
-    return result;
-  };
-  
-  // Algoritmo para empacar respetando el volumen y peso de la maleta
-  const packLuggage = (): ClothingRecommendation[] => {
-    // Obtener recomendaciones ideales
-    const idealRecommendations = calculateIdealRecommendations();
-    
-    // Aplicar algoritmo de optimización
-    return knapsackOptimization(
-      idealRecommendations, 
-      usableVolume, 
-      maxWeight, 
-      optimizationMethod as 'volume' | 'weight'
-    );
+      return { ...rec, actualQuantity: actualQty };
+    });
   };
   
   const idealPackingList = calculateIdealRecommendations();
   const packingList = packLuggage();
   
+  // Group items by category according to our preferred order
+  const groupItemsByCategory = (items: ClothingRecommendation[]): Record<ClothingCategory, ClothingRecommendation[]> => {
+    const grouped = {} as Record<ClothingCategory, ClothingRecommendation[]>;
+    
+    // Initialize all categories with empty arrays
+    categoryOrder.forEach(category => {
+      grouped[category] = [];
+    });
+    
+    // Group items by their categories
+    items.forEach(item => {
+      if (!grouped[item.item.category]) {
+        grouped[item.item.category] = [];
+      }
+      if (item.recommendedQuantity > 0 || item.actualQuantity > 0) {
+        grouped[item.item.category].push(item);
+      }
+    });
+    
+    return grouped;
+  };
+  
   // Agrupar por categoría las recomendaciones ideales
-  const groupedIdealItems = idealPackingList.reduce((acc, item) => {
-    const category = item.item.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(item);
-    return acc;
-  }, {} as Record<ClothingCategory, ClothingRecommendation[]>);
+  const groupedIdealItems = groupItemsByCategory(idealPackingList);
   
   // Agrupar por categoría las recomendaciones que caben en la maleta
-  const groupedPackingItems = packingList.reduce((acc, item) => {
-    const category = item.item.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    if (item.actualQuantity > 0) { // Solo incluir ítems que realmente se empacaron
-      acc[category].push(item);
-    }
-    return acc;
-  }, {} as Record<ClothingCategory, ClothingRecommendation[]>);
+  const groupedPackingItems = groupItemsByCategory(packingList);
   
   // Calcular espacio usado y disponible (usando volumen de ropa comprimida)
   const usedVolume = packingList.reduce((sum, item) => 
@@ -289,10 +272,6 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
     return recommendations;
   };
 
-  const handleToggleOptimizationMethod = () => {
-    setOptimizationMethod(optimizationMethod === 'volume' ? 'weight' : 'volume');
-  };
-
   const renderClothingList = (
     groupedItems: Record<ClothingCategory, ClothingRecommendation[]>,
     showLuggageCapacity: boolean = false
@@ -312,67 +291,69 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
             </div>
           )}
           
-          {Object.entries(groupedItems).map(([category, items], index) => (
-            <Collapsible key={category} defaultOpen={true} className="mb-4">
-              <CollapsibleTrigger className="flex items-center justify-between w-full py-2 px-1 hover:bg-gray-50 rounded">
-                <h4 className="font-medium text-sm text-maletapp-blue">
-                  {getCategoryLabel(category as ClothingCategory)}
-                </h4>
-                <Badge variant="outline">{items.length}</Badge>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <ul className="space-y-2 mt-2">
-                  {items.map((recommendation, itemIndex) => (
-                    <li key={`${category}-${itemIndex}`} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center">
-                        {showLuggageCapacity ? (
-                          recommendation.actualQuantity >= recommendation.recommendedQuantity ? (
-                            <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 text-amber-500 mr-2 flex-shrink-0" />
-                          )
-                        ) : (
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                        )}
-                        <span>{recommendation.item.name}</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        {showLuggageCapacity && (
-                          <div className="text-xs text-gray-500">
-                            {recommendation.item.weight.toFixed(1)} kg × {recommendation.actualQuantity}
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-1 text-sm">
+          {/* Render categories in our preferred order */}
+          {categoryOrder.map((category) => {
+            const items = groupedItems[category] || [];
+            if (items.length === 0) return null;
+            
+            return (
+              <Collapsible key={category} defaultOpen={true} className="mb-4">
+                <CollapsibleTrigger className="flex items-center justify-between w-full py-2 px-1 hover:bg-gray-50 rounded">
+                  <h4 className="font-medium text-sm text-maletapp-blue">
+                    {getCategoryLabel(category)}
+                  </h4>
+                  <Badge variant="outline">{items.length}</Badge>
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent>
+                  <ul className="space-y-2 mt-2">
+                    {items.map((recommendation, itemIndex) => (
+                      <li key={`${category}-${itemIndex}`} className="flex items-center justify-between text-sm">
+                        <div className="flex items-center">
                           {showLuggageCapacity ? (
-                            <span className={`font-medium ${recommendation.actualQuantity < recommendation.recommendedQuantity ? 'text-amber-500' : 'text-green-600'}`}>
-                              {recommendation.actualQuantity}
-                            </span>
+                            recommendation.actualQuantity >= recommendation.recommendedQuantity ? (
+                              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                            ) : (
+                              <AlertCircle className="h-4 w-4 text-amber-500 mr-2 flex-shrink-0" />
+                            )
                           ) : (
-                            <span className="font-medium text-gray-700">
-                              {recommendation.recommendedQuantity}
-                            </span>
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
                           )}
+                          <span>{recommendation.item.name}</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
                           {showLuggageCapacity && (
-                            <>
-                              <span className="text-gray-400">/</span>
-                              <span className="text-gray-500">
+                            <div className="text-xs text-gray-500">
+                              {recommendation.item.weight.toFixed(1)} kg × {recommendation.actualQuantity}
+                            </div>
+                          )}
+                          <div className="flex items-center space-x-1 text-sm">
+                            {showLuggageCapacity ? (
+                              <span className={`font-medium ${recommendation.actualQuantity < recommendation.recommendedQuantity ? 'text-amber-500' : 'text-green-600'}`}>
+                                {recommendation.actualQuantity}
+                              </span>
+                            ) : (
+                              <span className="font-medium text-gray-700">
                                 {recommendation.recommendedQuantity}
                               </span>
-                            </>
-                          )}
+                            )}
+                            {showLuggageCapacity && (
+                              <>
+                                <span className="text-gray-400">/</span>
+                                <span className="text-gray-500">
+                                  {recommendation.recommendedQuantity}
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                
-                {index < Object.keys(groupedItems).length - 1 && (
-                  <Separator className="my-3" />
-                )}
-              </CollapsibleContent>
-            </Collapsible>
-          ))}
+                      </li>
+                    ))}
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
         </div>
       </ScrollArea>
     );
@@ -411,17 +392,8 @@ const ClothingSuggestions: React.FC<ClothingSuggestionsProps> = ({
             </TabsContent>
             
             <TabsContent value="luggage">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-50 text-blue-800 rounded-lg text-sm flex-1 mr-2">
-                  Esta es la ropa que realmente cabrá en tu maleta, teniendo en cuenta el espacio disponible.
-                </div>
-                <button 
-                  onClick={handleToggleOptimizationMethod} 
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                >
-                  {optimizationMethod === 'volume' ? <Box size={14} /> : <Weight size={14} />}
-                  <span>Optimizar por {optimizationMethod === 'volume' ? 'volumen' : 'peso'}</span>
-                </button>
+              <div className="mb-4 p-2 bg-blue-50 text-blue-800 rounded-lg text-sm">
+                Esta es la ropa que realmente cabrá en tu maleta, teniendo en cuenta el espacio disponible.
               </div>
               
               {renderClothingList(groupedPackingItems, true)}

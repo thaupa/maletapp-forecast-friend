@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DateRange } from "react-day-picker";
 import { 
@@ -198,7 +199,11 @@ const Index = () => {
           <div className="space-y-6">
             {weatherForecasts.length > 0 && (
               <div className="mb-6">
-                <WeatherForecastComponent forecasts={weatherForecasts} />
+                <WeatherForecastComponent 
+                  forecasts={weatherForecasts} 
+                  startDate={tripInfo.startDate}
+                  endDate={tripInfo.endDate}
+                />
               </div>
             )}
             

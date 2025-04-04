@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { WeatherForecast } from '@/types';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { 
   Cloud, 
@@ -10,7 +10,8 @@ import {
   Snowflake,
   Thermometer,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  CloudRain
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -18,14 +19,32 @@ import { Button } from '@/components/ui/button';
 
 interface WeatherForecastProps {
   forecasts: WeatherForecast[];
+  startDate?: Date | null;
+  endDate?: Date | null;
 }
 
-const WeatherForecastComponent: React.FC<WeatherForecastProps> = ({ forecasts }) => {
+const WeatherForecastComponent: React.FC<WeatherForecastProps> = ({ 
+  forecasts, 
+  startDate, 
+  endDate 
+}) => {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   if (!forecasts || forecasts.length === 0) {
     return null;
   }
+
+  // Filter forecasts to only show those within the selected date range if dates are provided
+  const filteredForecasts = startDate && endDate 
+    ? forecasts.filter(forecast => {
+        const forecastDate = parseISO(forecast.date);
+        // Check if this forecast date is within the selected range
+        return (
+          forecastDate >= startDate &&
+          forecastDate <= endDate
+        );
+      })
+    : forecasts;
 
   const getWeatherIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
@@ -37,6 +56,8 @@ const WeatherForecastComponent: React.FC<WeatherForecastProps> = ({ forecasts })
         return <CloudSun className="text-gray-400" size={24} />;
       case 'nublado':
         return <Cloud className="text-gray-400" size={24} />;
+      case 'lluvia':
+        return <CloudRain className="text-blue-400" size={24} />;
       case 'frío':
         return <Snowflake className="text-blue-300" size={24} />;
       default:
@@ -60,11 +81,11 @@ const WeatherForecastComponent: React.FC<WeatherForecastProps> = ({ forecasts })
     <div className="w-full">
       <h3 className="font-medium text-lg mb-3 flex items-center gap-2">
         <Thermometer className="text-maletapp-orange" />
-        Previsión del tiempo (datos históricos del año pasado)
+        Previsión del tiempo para tu viaje
       </h3>
       
       <div className="relative w-full">
-        {forecasts.length > 3 && (
+        {filteredForecasts.length > 3 && (
           <>
             <Button 
               variant="outline" 
@@ -90,31 +111,42 @@ const WeatherForecastComponent: React.FC<WeatherForecastProps> = ({ forecasts })
             ref={scrollContainerRef}
             className="flex space-x-4 pb-4 px-1 pt-1 pl-1 pr-1 min-w-full"
           >
-            {forecasts.map((forecast, index) => {
-              // Use parseISO to correctly parse the ISO date string
-              const date = parseISO(forecast.date);
-              return (
-                <Card key={index} className="min-w-[140px] shadow-sm flex-shrink-0">
-                  <CardContent className="p-3">
-                    <div className="flex flex-col items-center">
-                      <p className="text-sm font-medium mb-2">
-                        {format(date, 'EEEE', { locale: es })}
-                      </p>
-                      <p className="text-xs text-gray-500 mb-2">
-                        {format(date, 'd MMM', { locale: es })}
-                      </p>
-                      <div className="mb-2">{getWeatherIcon(forecast.conditions)}</div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm font-bold text-blue-500">{forecast.min}°</span>
-                        <span className="text-xs text-gray-400">-</span>
-                        <span className="text-sm font-bold text-red-500">{forecast.max}°</span>
+            {filteredForecasts.length > 0 ? (
+              filteredForecasts.map((forecast, index) => {
+                // Use parseISO to correctly parse the ISO date string
+                const date = parseISO(forecast.date);
+                const isFirstDay = startDate && isSameDay(date, startDate);
+                const isLastDay = endDate && isSameDay(date, endDate);
+                
+                return (
+                  <Card key={index} className="min-w-[140px] shadow-sm flex-shrink-0">
+                    <CardContent className="p-3">
+                      <div className="flex flex-col items-center">
+                        <p className="text-sm font-medium mb-2">
+                          {format(date, 'EEEE', { locale: es })}
+                        </p>
+                        <p className="text-xs text-gray-500 mb-2">
+                          {format(date, 'd MMM', { locale: es })}
+                          {isFirstDay && " (Llegada)"}
+                          {isLastDay && " (Salida)"}
+                        </p>
+                        <div className="mb-2">{getWeatherIcon(forecast.conditions)}</div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-bold text-blue-500">{forecast.min}°</span>
+                          <span className="text-xs text-gray-400">-</span>
+                          <span className="text-sm font-bold text-red-500">{forecast.max}°</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{forecast.conditions}</p>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">{forecast.conditions}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    </CardContent>
+                  </Card>
+                );
+              })
+            ) : (
+              <div className="flex justify-center items-center w-full py-8 text-gray-500">
+                No hay datos de previsión para las fechas seleccionadas
+              </div>
+            )}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>

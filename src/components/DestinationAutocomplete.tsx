@@ -5,6 +5,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { POPULAR_CITIES } from '@/data/mockData';
 import { MapPin, Loader2 } from 'lucide-react';
 
+// Add type definition for Google Maps
+declare global {
+  interface Window {
+    google: typeof google;
+  }
+}
+
 interface DestinationAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
@@ -37,15 +44,15 @@ const DestinationAutocomplete: React.FC<DestinationAutocompleteProps> = ({ value
       script.defer = true;
       script.onload = () => {
         // Initialize the Autocomplete service
-        if (google?.maps?.places) {
-          autocompleteServiceRef.current = new google.maps.places.AutocompleteService();
+        if (window.google?.maps?.places) {
+          autocompleteServiceRef.current = new window.google.maps.places.AutocompleteService();
           setHasGoogleLoaded(true);
         }
       };
       document.head.appendChild(script);
-    } else if (google?.maps?.places && !autocompleteServiceRef.current) {
+    } else if (window.google?.maps?.places && !autocompleteServiceRef.current) {
       // If script already exists but service not initialized
-      autocompleteServiceRef.current = new google.maps.places.AutocompleteService();
+      autocompleteServiceRef.current = new window.google.maps.places.AutocompleteService();
       setHasGoogleLoaded(true);
     }
 
@@ -92,7 +99,7 @@ const DestinationAutocomplete: React.FC<DestinationAutocompleteProps> = ({ value
           },
           (predictions, status) => {
             setIsLoading(false);
-            if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+            if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
               setGoogleSuggestions(predictions);
             } else {
               setGoogleSuggestions([]);
